@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.5
+Name=Editor
+Comment=Unofficial plugin editor for the game Endless Sky
+Exec=editor
+Icon=editor
+Type=Application
+Keywords=editor;endless-sky;
+Categories=Utility;Development;
+PrefersNonDefaultGPU=true
+SingleMainWindow=true

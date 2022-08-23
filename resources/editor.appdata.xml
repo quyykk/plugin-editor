@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+  <id>io.github.quyykk.plugin_editor</id>
+  <launchable type="desktop-id">editor.desktop</launchable>
+  <name>Editor</name>
+  <summary>Unofficial plugin editor for the game Endless Sky</summary>
+  <developer_name>quyykk</developer_name>
+  <project_license>GPL-3.0</project_license>
+  <metadata_license>CC0-1.0</metadata_license>
+  <description>
+    <p>A unofficial plugin editor for the game Endless Sky. Includes helpful tools to help you make plugins!</p>
+  </description>
+  <categories>
+    <category>Development</category>
+    <category>Utility</category>
+  </categories>
+  <url type="bugtracker">https://github.com/quyykk/plugin-editor/issues</url>
+  <url type="help">https://github.com/quyykk/plugin-editor/wiki</url>
+  <url type="homepage">https://github.com/quyykk/plugin-editor</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://user-images.githubusercontent.com/85879619/131727841-bd3bdfc0-32ce-41c0-bfd2-b5223c37c806.png</image>
+      <caption>Various editor windows opened while adding a new ship</caption>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="1.0.0" date="2022-10-01">
+      <description>
+        <p>This is the initial release, compatible with the latest stable release of Endless Sky.</p>
+      </description>
+	  <url>https://github.com/quyykk/plugin-editor/releases/tag/continuous</url>
+    </release>
+  </releases>
+</component>

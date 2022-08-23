@@ -1,0 +1,34 @@
+{
+	"dependencies": [
+		{
+			"name": "imgui",
+			"features": [
+				"opengl3-binding",
+				"sdl2-binding",
+				"docking-experimental"
+			]
+		},
+		"nativefiledialog-extended",
+		{
+			"name": "sdl2",
+			"features": ["x11", "wayland"],
+			"platform": "linux"
+		},
+		{
+			"name": "sdl2",
+			"platform": "!linux"
+		},
+		"openal-soft",
+		"libpng",
+		"libjpeg-turbo",
+		"libmad",
+		{
+			"name": "glew",
+			"platform": "!osx"
+		},
+		{
+			"name": "libuuid",
+			"platform": "!windows & !osx"
+		}
+	]
+}
