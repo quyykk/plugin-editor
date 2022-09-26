@@ -171,12 +171,12 @@ jobs:
             github-release release \
               --tag continuous \
               --name "Continuous Build" \
-              --description "$DESCRIPTION" \
+              --description "$DESCRIPTION"
           else
             github-release edit \
               --tag continuous \
               --name "Continuous Build" \
-              --description "$DESCRIPTION" \
+              --description "$DESCRIPTION"
           fi
       - name: Download Artifacts
         uses: actions/download-artifact@v3

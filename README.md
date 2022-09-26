@@ -18,7 +18,7 @@ Clone this repo with submodules:
 $ git clone https://github.com/quyykk/plugin-editor --recursive
 ```
 
-This guide assumes you have at least CMake 3.21, but CMake 3.13 can be used as well. On Linux you'll have to use a distro that has reasonably up-to-date libraries (latest Fedora, latest Ubuntu, Arch, etc.). If not you can pass `-DES_USE_SYSTEM_LIBRARIES=OFF` to cmake so that it builds the required dependencies instead of using the ones from your distro.
+This guide assumes you have at least CMake 3.21.
 
 Install the following, depending on your OS:
 
@@ -33,19 +33,19 @@ If you want to use MinGW (select the **MSVCRT runtime**; get it from [here](http
 Install [Homebrew](https://brew.sh). Once it is installed, use it to install the tools you will need:
 
 ```
-$ brew install cmake ninja sdl2 libmad libpng jpeg-turbo openal-soft
+$ brew install cmake ninja pkg-config nasm
 ```
 </details>
 <details>
 <summary>Debian distros</summary>
 ```
-g++ cmake ninja-build libsdl2-dev libpng-dev libjpeg-dev libgl1-mesa-dev libglew-dev libopenal-dev libmad0-dev uuid-dev
+g++ cmake ninja-build pkg-config libgl1-mesa-dev libxmu-dev libxi-dev libglu1-mesa-dev tar zip unzip curl
 ```
 </details>
 <details>
 <summary>Fedora distros</summary>
 ```
-gcc-c++ cmake ninja-build SDL2-devel libpng-devel libjpeg-turbo-devel mesa-libGL-devel glew-devel openal-soft-devel libmad-devel libuuid-devel
+gcc-c++ cmake ninja-build mesa-libGL-devel autoconf libtool libXext-devel mesa-libGLU-devel
 ```
 </details>
 
