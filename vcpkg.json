@@ -18,7 +18,15 @@
 			"name": "sdl2",
 			"platform": "!linux"
 		},
-		"openal-soft",
+		{
+			"name": "openal-soft",
+			"features": ["pipewire"],
+			"platform": "linux"
+		},
+		{
+			"name": "openal-soft",
+			"platform": "!linux"
+		},
 		"libpng",
 		"libjpeg-turbo",
 		"libmad",
