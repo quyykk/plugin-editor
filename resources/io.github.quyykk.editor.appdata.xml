@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-  <id>io.github.quyykk.plugin_editor</id>
+  <id>io.github.quyykk.editor</id>
   <launchable type="desktop-id">editor.desktop</launchable>
   <name>Editor</name>
   <summary>Unofficial plugin editor for the game Endless Sky</summary>
@@ -12,7 +12,6 @@
   </description>
   <categories>
     <category>Development</category>
-    <category>Utility</category>
   </categories>
   <url type="bugtracker">https://github.com/quyykk/plugin-editor/issues</url>
   <url type="help">https://github.com/quyykk/plugin-editor/wiki</url>
@@ -31,4 +30,6 @@
 	  <url>https://github.com/quyykk/plugin-editor/releases/tag/continuous</url>
     </release>
   </releases>
+  <content_rating type="oars-1.1">
+  </content_rating>
 </component>

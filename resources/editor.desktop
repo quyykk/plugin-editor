@@ -6,6 +6,6 @@ Exec=editor
 Icon=editor
 Type=Application
 Keywords=editor;endless-sky;
-Categories=Utility;Development;
+Categories=Development;
 PrefersNonDefaultGPU=true
 SingleMainWindow=true
