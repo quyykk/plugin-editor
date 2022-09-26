@@ -25,11 +25,11 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ubuntu-18-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+          key: ${{ runner.os }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            ubuntu-18-ccache-${{ github.repository }}-${{ github.ref }}-
-            ubuntu-18-ccache-${{ github.repository }}-
-            ubuntu-18-ccache-
+            ${{ runner.os }}-ccache-${{ github.repository }}-${{ github.ref }}-
+            ${{ runner.os }}-ccache-${{ github.repository }}-
+            ${{ runner.os }}-ccache-
       - name: Get Python
         uses: actions/setup-python@v4
         with:
@@ -67,11 +67,11 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: ${{ env.CACHE_ID }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+          key: ${{ runner.os }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            ${{ env.CACHE_ID }}-ccache-${{ github.repository }}-${{ github.ref }}-
-            ${{ env.CACHE_ID }}-ccache-${{ github.repository }}-
-            ${{ env.CACHE_ID }}-ccache
+            ${{ runner.os }}-ccache-${{ github.repository }}-${{ github.ref }}-
+            ${{ runner.os }}-ccache-${{ github.repository }}-
+            ${{ runner.os }}-ccache
       - name: Install development dependencies
         uses: ./.github/dependencies
       - name: Get MinGW
@@ -110,11 +110,11 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ env.CCACHE_DIR }}
-          key: macos-12-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
+          key: ${{ runner.os }}-ccache-${{ github.repository }}-${{ github.ref }}-${{ github.sha }}
           restore-keys: |
-            macos-12-ccache-${{ github.repository }}-${{ github.ref }}-
-            macos-12-ccache-${{ github.repository }}-
-            macos-12-ccache
+            ${{ runner.os }}-ccache-${{ github.repository }}-${{ github.ref }}-
+            ${{ runner.os }}-ccache-${{ github.repository }}-
+            ${{ runner.os }}-ccache
       - name: Install development dependencies
         uses: ./.github/dependencies
       - uses: lukka/get-cmake@latest
