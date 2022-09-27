@@ -135,7 +135,10 @@ const std::map<T, std::string> &Plugin::GetMapForNodeElement() const
 	else if constexpr(std::is_same_v<T, const System *>)
 		return systems;
 	else
+	{
 		assert(!"no map for T");
+		return {};
+	}
 }
 
 
