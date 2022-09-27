@@ -636,6 +636,9 @@ void Editor::NewPlugin(const string &plugin, bool reset)
 
 bool Editor::OpenPlugin(const string &plugin)
 {
+	// Don't show invalid path dialog if the user pressed cancel.
+	if(plugin.empty())
+		return true;
 	if(!Files::Exists(plugin) || !Files::Exists(plugin + "data/"))
 		return false;
 
@@ -684,6 +687,9 @@ bool Editor::OpenPlugin(const string &plugin)
 
 bool Editor::OpenGameData(const string &game)
 {
+	// Don't show invalid path dialog if the user pressed cancel.
+	if(game.empty())
+		return true;
 	if(!Files::Exists(game) || !Files::Exists(game + "data/")
 			|| !Files::Exists(game + "credits.txt"))
 		return false;
