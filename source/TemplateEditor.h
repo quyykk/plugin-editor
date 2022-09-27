@@ -169,7 +169,8 @@ inline void AdditionalCalls(DataWriter &writer, const RandomEvent<Hazard> &obj)
 template <typename T>
 inline void AdditionalCalls(DataWriter &writer, const WeightedItem<T> &item)
 {
-	writer.WriteToken(item.weight);
+	if(item.weight != 1)
+		writer.WriteToken(item.weight);
 }
 
 template <typename C>
