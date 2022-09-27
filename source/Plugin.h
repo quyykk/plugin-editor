@@ -137,7 +137,8 @@ const std::map<T, std::string> &Plugin::GetMapForNodeElement() const
 	else
 	{
 		assert(!"no map for T");
-		return {};
+		static std::map<T, std::string> empty;
+		return empty;
 	}
 }
 
