@@ -92,8 +92,8 @@ private:
 	void ResetPanels();
 
 	void NewPlugin(const std::string &plugin, bool reset = true);
-	void OpenPlugin(const std::string &plugin);
-	void OpenGameData(const std::string &game);
+	bool OpenPlugin(const std::string &plugin);
+	bool OpenGameData(const std::string &game);
 	void SavePlugin();
 
 	void StyleColorsGray();

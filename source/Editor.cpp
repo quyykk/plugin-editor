@@ -249,6 +249,8 @@ void Editor::RenderMain()
 	bool openPluginDialog = false;
 	bool saveAsPluginDialog = false;
 	bool aboutDialog = false;
+	bool invalidFolderDialog = false;
+	bool invalidGameFolderDialog = false;
 	if(ImGui::BeginMainMenuBar())
 	{
 		if(ImGui::BeginMenu("File"))
@@ -256,10 +258,12 @@ void Editor::RenderMain()
 			ImGui::MenuItem("New Plugin", "Ctrl+N", &newPluginDialog);
 			if(ImGui::BeginMenu("Open"))
 			{
-				if(ImGui::MenuItem("Plugin"))
-					OpenPlugin(OpenFileDialog(/*folders=*/true, /*openDefault=*/true));
-				if(ImGui::MenuItem("Game Data", "(experimental)"))
-					OpenGameData(OpenFileDialog(/*folders=*/true, /*openDefault=*/true));
+				if(ImGui::MenuItem("Plugin")
+						&& !OpenPlugin(OpenFileDialog(/*folders=*/true, /*openDefault=*/true)))
+					invalidFolderDialog = true;
+				if(ImGui::MenuItem("Game Data", "(experimental)")
+						&& !OpenGameData(OpenFileDialog(/*folders=*/true, /*openDefault=*/true)))
+					invalidGameFolderDialog = true;
 				ImGui::EndMenu();
 			}
 			if(ImGui::MenuItem("Save", "Ctrl+S", false, hasChanges))
@@ -364,6 +368,10 @@ void Editor::RenderMain()
 		ImGui::OpenPopup("Confirmation Dialog");
 	if(aboutDialog)
 		ImGui::OpenPopup("About");
+	if(invalidFolderDialog)
+		ImGui::OpenPopup("Invalid Folder");
+	if(invalidGameFolderDialog)
+		ImGui::OpenPopup("Invalid Game Folder");
 
 	if(ImGui::BeginPopupModal("New Plugin", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
 	{
@@ -500,6 +508,17 @@ void Editor::RenderMain()
 			SDL_OpenURL("https://discord.gg/ZeuASSx");
 		ImGui::EndPopup();
 	}
+	if(ImGui::BeginPopup("Invalid Folder", ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
+	{
+		ImGui::Text("This folder is not a valid folder! Make sure that you selected the actual plugin folder, and not the 'data' folder inside!");
+		ImGui::EndPopup();
+	}
+	if(ImGui::BeginPopup("Invalid Game Folder", ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
+	{
+		ImGui::Text("This folder is not a valid game folder! Make sure that you selected the actual game folder, and not the 'data' folder inside!");
+		ImGui::Text("Also make sure you didn't select a plugin by accident.");
+		ImGui::EndPopup();
+	}
 }
 
 
@@ -571,10 +590,10 @@ void Editor::NewPlugin(const string &plugin, bool reset)
 
 
 
-void Editor::OpenPlugin(const string &plugin)
+bool Editor::OpenPlugin(const string &plugin)
 {
-	if(!Files::Exists(plugin))
-		return;
+	if(!Files::Exists(plugin) || !Files::Exists(plugin + "data/"))
+		return false;
 
 	currentPluginPath = plugin + "data/";
 	isGameData = false;
@@ -613,14 +632,17 @@ void Editor::OpenPlugin(const string &plugin)
 
 			ui.Push(mapEditorPanel);
 		}, showEditor));
+
+	return true;
 }
 
 
 
-void Editor::OpenGameData(const string &game)
+bool Editor::OpenGameData(const string &game)
 {
-	if(!Files::Exists(game))
-		return;
+	if(!Files::Exists(game) || !Files::Exists(game + "data/")
+			|| !Files::Exists(game + "credits.txt"))
+		return false;
 
 	currentPluginPath = game + "data/";
 	isGameData = true;
@@ -659,6 +681,8 @@ void Editor::OpenGameData(const string &game)
 
 			ui.Push(mapEditorPanel);
 		}, showEditor));
+
+	return true;
 }
 
 
