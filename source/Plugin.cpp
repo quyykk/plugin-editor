@@ -58,6 +58,7 @@ void Plugin::Load(const Editor &editor, string_view path)
 {
 	data.clear();
 	unknownNodes.clear();
+	filesChanged.clear();
 	hasModifications = false;
 
 	// We assume that path refers to a valid path to the root of the plugin.

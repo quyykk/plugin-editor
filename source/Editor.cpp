@@ -159,7 +159,8 @@ UI &Editor::GetUI()
 
 const GameAssets::Snapshot &Editor::BaseUniverse() const
 {
-	return baseAssets;
+	static GameAssets::Snapshot empty;
+	return isGameData ? empty : baseAssets;
 }
 
 
@@ -257,10 +258,8 @@ void Editor::RenderMain()
 			{
 				if(ImGui::MenuItem("Plugin"))
 					OpenPlugin(OpenFileDialog(/*folders=*/true, /*openDefault=*/true));
-				if(ImGui::MenuItem("Data Folder", nullptr, false, false))
-					OpenFile(OpenFileDialog(/*folders=*/true));
-				if(ImGui::MenuItem("Data File", nullptr, false, false))
-					OpenFolder(OpenFileDialog(/*folders=*/false));
+				if(ImGui::MenuItem("Game Data", "(experimental)"))
+					OpenGameData(OpenFileDialog(/*folders=*/true, /*openDefault=*/true));
 				ImGui::EndMenu();
 			}
 			if(ImGui::MenuItem("Save", "Ctrl+S", false, hasChanges))
@@ -533,6 +532,18 @@ void Editor::ResetEditor()
 
 
 
+void Editor::ResetPanels()
+{
+	ui.Pop(mapEditorPanel.get());
+	ui.Pop(mainEditorPanel.get());
+	ui.Pop(outfitterEditorPanel.get());
+
+	mapEditorPanel.reset();
+	mainEditorPanel.reset();
+	outfitterEditorPanel.reset();
+}
+
+
 void Editor::NewPlugin(const string &plugin, bool reset)
 {
 	auto pluginsPath = Files::Config() + "plugins/";
@@ -566,6 +577,11 @@ void Editor::OpenPlugin(const string &plugin)
 		return;
 
 	currentPluginPath = plugin + "data/";
+	isGameData = false;
+
+	// Reset.
+	ResetEditor();
+	ResetPanels();
 
 	// Revert to the base state.
 	GameData::Assets().Revert(baseAssets);
@@ -591,10 +607,57 @@ void Editor::OpenPlugin(const string &plugin)
 		{
 			ui.Pop(This);
 
-			ResetEditor();
-			systemEditor.UpdateMap();
-			systemEditor.UpdateMain();
-			outfitterEditorPanel->UpdateCache();
+			mapEditorPanel = make_shared<MapEditorPanel>(*this, &planetEditor, &systemEditor);
+			mainEditorPanel = make_shared<MainEditorPanel>(*this, &planetEditor, &systemEditor);
+			outfitterEditorPanel = make_shared<OutfitterEditorPanel>(*this, shipEditor);
+
+			ui.Push(mapEditorPanel);
+		}, showEditor));
+}
+
+
+
+void Editor::OpenGameData(const string &game)
+{
+	if(!Files::Exists(game))
+		return;
+
+	currentPluginPath = game + "data/";
+	isGameData = true;
+
+	// Reset.
+	ResetEditor();
+	ResetPanels();
+
+	// Revert to nothing.
+	GameData::Assets().Revert({});
+
+	TaskQueue::Run([this, game]
+		{
+			// Load the plugin.
+			GameData::Assets().LoadObjects(currentPluginPath);
+			// Find the new images and sounds to load from the plugin.
+			GameAssets::SoundMap sounds;
+			GameData::Assets().FindSounds(sounds, Files::Resources() + "sounds/");
+			GameData::Assets().LoadSounds(game + "sounds/", std::move(sounds));
+
+			GameAssets::ImageMap images;
+			GameData::Assets().FindImages(images, Files::Resources() + "images/");
+			GameData::Assets().LoadSprites(game + "images/", std::move(images));
+
+			this->plugin.Load(*this, currentPluginPath);
+		});
+
+	showEditor = false;
+	ui.Push(new GameLoadingPanel([this](GameLoadingPanel *This)
+		{
+			ui.Pop(This);
+
+			mapEditorPanel = make_shared<MapEditorPanel>(*this, &planetEditor, &systemEditor);
+			mainEditorPanel = make_shared<MainEditorPanel>(*this, &planetEditor, &systemEditor);
+			outfitterEditorPanel = make_shared<OutfitterEditorPanel>(*this, shipEditor);
+
+			ui.Push(mapEditorPanel);
 		}, showEditor));
 }
 
@@ -606,63 +669,6 @@ void Editor::SavePlugin()
 		return;
 
 	plugin.Save(*this, currentPluginPath);
-}
-
-
-
-void Editor::OpenFile(const string &file)
-{
-	if(!Files::Exists(file))
-		return;
-
-	currentPluginPath = file;
-	isFile = true;
-
-	// Revert to nothingness.
-	GameData::Assets().Revert(baseAssets);
-
-	// Load the plugin.
-	GameData::Assets().objects.LoadFile(file, false);
-	GameData::Assets().objects.FinishLoading();
-
-	// Find the new images and sounds to load from the plugin.
-	GameData::Assets().LoadSounds(Files::Resources() + "sounds/");
-
-	GameData::Assets().LoadSprites(Files::Resources() + "images/");
-	GameData::Assets().sprites.CheckReferences();
-
-	this->plugin.Load(*this, currentPluginPath);
-
-	ResetEditor();
-	systemEditor.UpdateMap();
-	systemEditor.UpdateMain();
-}
-
-
-
-void Editor::OpenFolder(const string &folder)
-{
-	if(!Files::Exists(folder))
-		return;
-
-	currentPluginPath = folder;
-
-	// Revert to the base state.
-	GameData::Assets().Revert(baseAssets);
-
-	// Load the plugin.
-	GameData::Assets().LoadObjects(currentPluginPath).wait();
-	// Find the new images and sounds to load from the plugin.
-	GameData::Assets().LoadSounds(Files::Resources() + "sounds/");
-
-	GameData::Assets().LoadSprites(Files::Resources() + "images/");
-	GameData::Assets().sprites.CheckReferences();
-
-	this->plugin.Load(*this, currentPluginPath);
-
-	ResetEditor();
-	systemEditor.UpdateMap();
-	systemEditor.UpdateMain();
 }
 
 

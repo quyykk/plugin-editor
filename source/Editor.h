@@ -89,13 +89,12 @@ public:
 
 private:
 	void ResetEditor();
+	void ResetPanels();
 
 	void NewPlugin(const std::string &plugin, bool reset = true);
 	void OpenPlugin(const std::string &plugin);
+	void OpenGameData(const std::string &game);
 	void SavePlugin();
-
-	void OpenFile(const std::string &file);
-	void OpenFolder(const std::string &folder);
 
 	void StyleColorsGray();
 	void StyleColorsDarkGray();
@@ -128,7 +127,7 @@ private:
 
 	Plugin plugin;
 	std::string currentPluginPath;
-	bool isFile = false;
+	bool isGameData = false;
 
 	bool showConfirmationDialog = false;
 	bool showMainEditorPanelProperties = false;
