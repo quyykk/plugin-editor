@@ -1,6 +1,6 @@
 # Editor
 
-This is an unofficial plugin editor for Endless Sky. It is continuously updated, and supports the latest release of Endless Sky!
+This is an unofficial plugin editor for Endless Sky. It is continuously updated, and supports the latest release of Endless Sky! You can download it [here](https://github.com/quyykk/plugin-editor/releases/latest).
 
 Features:
 
@@ -11,6 +11,11 @@ Features:
 It is the successor of the old [plugin editor](https://github.com/quyykk/editor).
 
 ## Screenshots
+
+![map editor showcase](https://user-images.githubusercontent.com/85879619/192547576-d65f99b5-32dc-4bb6-bfad-7814e7028f9a.png)
+
+![system view showcase](https://user-images.githubusercontent.com/85879619/192548174-94d40f19-ba7b-4be7-b196-5f564efd8b3e.png)
+
 
 ## Build instructions
 
