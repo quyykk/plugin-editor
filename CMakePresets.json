@@ -165,8 +165,8 @@
       "description": "Builds for MacOS for CI purposes",
       "inherits": "ci",
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x64-osx10.9-dynamic",
-        "CMAKE_OSX_DEPLOYMENT_TARGET": "10.9"
+        "VCPKG_TARGET_TRIPLET": "x64-osx10.13-dynamic",
+        "CMAKE_OSX_DEPLOYMENT_TARGET": "10.13"
       }
     },
     {
