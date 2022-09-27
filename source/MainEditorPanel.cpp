@@ -83,8 +83,6 @@ void MainEditorPanel::RenderProperties(SystemEditor &systemEditor, bool &show)
 	ImGui::Checkbox("Show Belts", &showBelts);
 	ImGui::Checkbox("Show Arrival Distance", &showArrivalDistance);
 	ImGui::InputInt("Time Increment", &timeIncrement);
-	if(ImGui::Button("Standardize System"))
-		systemEditor.StandardizeSystem();
 	ImGui::End();
 }
 

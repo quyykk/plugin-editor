@@ -44,8 +44,6 @@ public:
 	void UpdateSystemPosition(const System *system, Point dp);
 	// Updates the given stellar's position by the given delta.
 	void UpdateStellarPosition(const StellarObject &object, Point pos, const System *system);
-	// Standardizes periods, etc. of the system's stellar objects.
-	void StandardizeSystem();
 	// Toggles a link between the current object and the given one.
 	void ToggleLink(const System *system);
 	// Create a new system at the specified position.
@@ -75,6 +73,9 @@ private:
 	void Randomize();
 	void RandomizeAsteroids();
 	void RandomizeMinables();
+
+	// Standardizes habitable and period values of the current system.
+	void StandardizeSystem();
 
 	const Sprite *RandomStarSprite();
 	const Sprite *RandomPlanetSprite(bool recalculate = false);

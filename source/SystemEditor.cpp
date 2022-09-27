@@ -39,13 +39,82 @@ using namespace std;
 
 namespace {
 
-constexpr double HABITABLE_SCALE = 1.25;
-double getMass(const StellarObject &stellar)
+constexpr double STELLAR_MASS_SCALE = 6.25;
+
+double GetMass(const StellarObject &stellar)
 {
 	constexpr double STAR_MASS_SCALE = .25;
 	const auto radius = stellar.Radius();
 	return radius * radius * STAR_MASS_SCALE;
 }
+
+// Habitable ranges for a given star.
+std::map<std::string_view, double> starHabitableValues = {
+	{ "star/o-supergiant", 33450. },
+	{ "star/o-giant", 22300. },
+	{ "star/o0", 13720. },
+	{ "star/o3", 11500. },
+	{ "star/o5", 10000. },
+	{ "star/o8", 8650. },
+	{ "star/o-dwarf", 1325. },
+	{ "star/b-supergiant", 17025. },
+	{ "star/b-giant", 11350. },
+	{ "star/b0", 7000. },
+	{ "star/b3", 6300. },
+	{ "star/b5", 5600. },
+	{ "star/b8", 5000. },
+	{ "star/b-dwarf", 1125. },
+	{ "star/a-supergiant", 11850. },
+	{ "star/a-giant", 7900. },
+	{ "star/a0", 3650. },
+	{ "star/a3", 3400. },
+	{ "star/a5", 3200. },
+	{ "star/a8", 3000. },
+	{ "star/a-dwarf", 750. },
+	{ "star/f-supergiant", 8400. },
+	{ "star/f-giant", 5600. },
+	{ "star/f0", 2560. },
+	{ "star/f3", 2200. },
+	{ "star/f5", 1715. },
+	{ "star/f5-old", 3430. },
+	{ "star/f8", 1310. },
+	{ "star/f-dwarf", 355. },
+	{ "star/g-supergiant", 6075. },
+	{ "star/g-giant", 4050. },
+	{ "star/g0", 1080. },
+	{ "star/g0-old", 2160. },
+	{ "star/g3", 700. },
+	{ "star/g5", 625. },
+	{ "star/g5-old", 1250. },
+	{ "star/g8", 550. },
+	{ "star/g-dwarf", 150. },
+	{ "star/k-supergiant", 4500. },
+	{ "star/k-giant", 3000. },
+	{ "star/k0", 490. },
+	{ "star/k0-old", 980. },
+	{ "star/k3", 450. },
+	{ "star/k5", 425. },
+	{ "star/k5-old", 950. },
+	{ "star/k8", 370. },
+	{ "star/k-dwarf", 100. },
+	{ "star/m-supergiant", 3450. },
+	{ "star/m-giant", 2300. },
+	{ "star/m0", 320. },
+	{ "star/m3", 230. },
+	{ "star/m5", 160. },
+	{ "star/m8", 135. },
+	{ "star/m-dwarf", 35. },
+	{ "star/l-dwarf", 30. },
+	{ "rouge", 10. },
+	{ "star/wr", 50000. },
+	{ "star/carbon", 3100. },
+	{ "star/nova", 100. },
+	{ "star/nova-small", 100. },
+	{ "star/nova-old", 100. },
+	{ "star/neutron", 100. },
+	{ "star/black-hole-core", 10000. },
+};
+
 
 }
 
@@ -69,12 +138,6 @@ void SystemEditor::UpdateStellarPosition(const StellarObject &object, Point pos,
 	auto &obj = const_cast<StellarObject &>(object);
 	obj.distance = pos.Length();
 	SetDirty(this->object);
-}
-
-
-
-void SystemEditor::StandardizeSystem()
-{
 }
 
 
@@ -235,6 +298,8 @@ void SystemEditor::Render()
 		{
 			if(ImGui::MenuItem("Generate Trades", "Ctrl+T", false, object))
 				GenerateTrades();
+			if(ImGui::MenuItem("Standardize System", nullptr, false, object))
+				StandardizeSystem();
 			ImGui::EndMenu();
 		}
 		ImGui::EndMenuBar();
@@ -1211,15 +1276,14 @@ void SystemEditor::Randomize()
 
 	// First we generate the (or 2) star(s).
 	const int numStars = 1 + !randStarNum(gen);
-	double mass;
 	if(numStars == 1)
 	{
 		StellarObject stellar;
 		stellar.sprite = RandomStarSprite();
 		stellar.speed = 36.;
-		mass = getMass(stellar);
 
 		object->objects.push_back(stellar);
+		object->habitable = starHabitableValues[stellar.sprite->Name()];
 	}
 	else
 	{
@@ -1256,9 +1320,9 @@ void SystemEditor::Randomize()
 			--attempts;
 		}
 
-		double mass1 = getMass(stellar1);
-		double mass2 = getMass(stellar2);
-		mass = mass1 + mass2;
+		double mass1 = GetMass(stellar1);
+		double mass2 = GetMass(stellar2);
+		double mass = mass1 + mass2;
 
 		double distance = radius1 + radius2 + randStarDist(gen) + STAR_DISTANCE;
 		stellar1.distance = (mass2 * distance) / mass;
@@ -1272,9 +1336,13 @@ void SystemEditor::Randomize()
 			swap(stellar1, stellar2);
 		object->objects.push_back(stellar1);
 		object->objects.push_back(stellar2);
+
+		auto habitable1 = starHabitableValues[stellar1.sprite->Name()];
+		auto habitable2 = starHabitableValues[stellar2.sprite->Name()];
+		object->habitable = sqrt(habitable1 * habitable1 + habitable2 * habitable2);
 	}
 
-	object->habitable = mass / HABITABLE_SCALE;
+	const double stellarMass = object->habitable * STELLAR_MASS_SCALE;
 
 	// Now we generate lots of planets with moons.
 	uniform_int_distribution<> randPlanetCount(4, 6);
@@ -1332,14 +1400,17 @@ void SystemEditor::Randomize()
 		if(getRadius(object->objects.back().sprite) < 70.)
 			moonCount = 0;
 
-		auto calcPeriod = [this, &getRadius](StellarObject &stellar, bool isMoon)
+		auto calcPeriod = [&stellarMass, &getRadius](StellarObject &stellar, bool isMoon)
 		{
-			const auto radius = getRadius(stellar.sprite);
-			constexpr double PLANET_MASS_SCALE = .015;
-			const auto mass = isMoon ? radius * radius * radius * PLANET_MASS_SCALE
-				: object->habitable * HABITABLE_SCALE;
-
-			stellar.speed = 360. / sqrt(stellar.distance * stellar.distance * stellar.distance / mass);
+			if(isMoon)
+			{
+				const auto radius = getRadius(stellar.sprite);
+				constexpr double PLANET_MASS_SCALE = .015;
+				const auto mass = radius * radius * radius * PLANET_MASS_SCALE;
+				stellar.speed = 360. / sqrt(stellar.distance * stellar.distance * stellar.distance / mass);
+			}
+			else
+				stellar.speed = 360. / sqrt(stellar.distance * stellar.distance * stellar.distance / stellarMass);
 		};
 
 		double moonDistance = getRadius(object->objects.back().sprite);
@@ -1373,6 +1444,38 @@ void SystemEditor::Randomize()
 
 	// Update the new objects' positions here to avoid a flicker.
 	editor.SystemViewPanel()->Step();
+}
+
+
+
+void SystemEditor::StandardizeSystem()
+{
+	if(object->objects.empty())
+		return;
+
+	// Calculate the habitable value.
+	auto *star1 = object->objects.front().sprite;
+
+	if(object->objects.size() == 1 || !object->objects[1].isStar)
+		object->habitable = starHabitableValues[star1->Name()];
+	else
+	{
+		auto habitable1 = starHabitableValues[star1->Name()];
+		auto habitable2 = starHabitableValues[object->objects[1].sprite->Name()];
+		object->habitable = sqrt(habitable1 * habitable1 + habitable2 * habitable2);
+	}
+
+	const auto stellarMass = object->habitable * STELLAR_MASS_SCALE;
+
+	// Now calculate the periods of every star.
+	for(size_t i = 2; i < object->objects.size(); ++i)
+	{
+		auto &stellar = object->objects[i];
+		if(stellar.parent == -1)
+			stellar.speed = 360. / sqrt(stellar.distance * stellar.distance * stellar.distance / stellarMass);
+	}
+
+	SetDirty();
 }
 
 
