@@ -1,12 +1,14 @@
 # Editor
 
-This is an unofficial plugin editor for Endless Sky. It is continuously updated, and supports the latest release of Endless Sky (including unstable "odd" versions).
+This is an unofficial plugin editor for Endless Sky. It is continuously updated, and supports the latest release of Endless Sky!
 
 Features:
 
 - Supports galaxies, systems, planets, hazards, effects, fleets, governments, ships, outfits, shipyards, and outfitters.
 - A powerful map editor!
-- An outfitter to easily create ship loadouts.
+- An outfitter to easily create ship loadouts!
+
+It is the successor of the old [plugin editor](https://github.com/quyykk/editor).
 
 ## Screenshots
 
