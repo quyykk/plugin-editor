@@ -251,6 +251,8 @@ void Editor::RenderMain()
 	bool aboutDialog = false;
 	bool invalidFolderDialog = false;
 	bool invalidGameFolderDialog = false;
+	bool openConfirmationDialog = false;
+	bool openGameConfirmationDialog = false;
 	if(ImGui::BeginMainMenuBar())
 	{
 		if(ImGui::BeginMenu("File"))
@@ -258,12 +260,20 @@ void Editor::RenderMain()
 			ImGui::MenuItem("New Plugin", "Ctrl+N", &newPluginDialog);
 			if(ImGui::BeginMenu("Open"))
 			{
-				if(ImGui::MenuItem("Plugin")
-						&& !OpenPlugin(OpenFileDialog(/*folders=*/true, /*openDefault=*/true)))
-					invalidFolderDialog = true;
-				if(ImGui::MenuItem("Game Data", "(experimental)")
-						&& !OpenGameData(OpenFileDialog(/*folders=*/true, /*openDefault=*/true)))
-					invalidGameFolderDialog = true;
+				if(ImGui::MenuItem("Plugin"))
+				{
+					if(hasChanges)
+						openConfirmationDialog = true;
+					else if(!OpenPlugin(OpenFileDialog(/*folders=*/true, /*openDefault=*/true)))
+						invalidFolderDialog = true;
+				}
+				if(ImGui::MenuItem("Game Data", "(experimental)"))
+				{
+					if(hasChanges)
+						openGameConfirmationDialog = true;
+					else if(!OpenGameData(OpenFileDialog(/*folders=*/true, /*openDefault=*/true)))
+						invalidGameFolderDialog = true;
+				}
 				ImGui::EndMenu();
 			}
 			if(ImGui::MenuItem("Save", "Ctrl+S", false, hasChanges))
@@ -355,6 +365,40 @@ void Editor::RenderMain()
 			SavePlugin();
 		else
 			saveAsPluginDialog = true;
+	}
+
+	// These dialogs are special.
+	if(openConfirmationDialog)
+		ImGui::OpenPopup("Open Confirmation");
+	if(openGameConfirmationDialog)
+		ImGui::OpenPopup("Open Game Confirmation");
+	if(ImGui::BeginPopupModal("Open Confirmation", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text("You have unsaved changes. Opening a plugin will discard all your changes. Are you sure?");
+		if(ImGui::Button("No"))
+			ImGui::CloseCurrentPopup();
+		ImGui::SameLine();
+		if(ImGui::Button("Yes"))
+		{
+			if(!OpenPlugin(OpenFileDialog(/*folders=*/true, /*openDefault=*/true)))
+				invalidFolderDialog = true;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+	if(ImGui::BeginPopupModal("Open Game Confirmation", nullptr, ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Text("You have unsaved changes. Opening game data will discard all your changes. Are you sure?");
+		if(ImGui::Button("No"))
+			ImGui::CloseCurrentPopup();
+		ImGui::SameLine();
+		if(ImGui::Button("Yes"))
+		{
+			if(!OpenGameData(OpenFileDialog(/*folders=*/true, /*openDefault=*/true)))
+				invalidGameFolderDialog = true;
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
 	}
 
 	// Dialogs/popups.
