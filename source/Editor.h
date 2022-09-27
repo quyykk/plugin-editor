@@ -101,15 +101,7 @@ private:
 	void StyleColorsDarkGray();
 
 
-private:
-	friend class Plugin;
-
-	UI &ui;
-	bool showEditor = true;
-
-	// The base universe of the game without any plugins.
-	GameAssets::Snapshot baseAssets;
-
+public:
 	EffectEditor effectEditor;
 	FleetEditor fleetEditor;
 	GalaxyEditor galaxyEditor;
@@ -121,6 +113,14 @@ private:
 	ShipEditor shipEditor;
 	ShipyardEditor shipyardEditor;
 	SystemEditor systemEditor;
+
+
+private:
+	UI &ui;
+	bool showEditor = true;
+
+	// The base universe of the game without any plugins.
+	GameAssets::Snapshot baseAssets;
 
 	std::shared_ptr<MapEditorPanel> mapEditorPanel;
 	std::shared_ptr<MainEditorPanel> mainEditorPanel;

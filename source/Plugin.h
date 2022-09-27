@@ -15,9 +15,12 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 #include "Sale.h"
 
+#include <cassert>
 #include <list>
 #include <set>
+#include <string>
 #include <string_view>
+#include <type_traits>
 #include <unordered_map>
 #include <variant>
 #include <vector>
@@ -61,27 +64,79 @@ public:
 	// Removes the specified object as part of this plugin.
 	void Remove(const Node &node);
 
+
+private:
+	// Helper function that returns the map corresponding to the type of ptr.
+	template <typename T>
+	std::map<T, std::string> &GetMapForNodeElement();
+	template <typename T>
+	const std::map<T, std::string> &GetMapForNodeElement() const;
+
+
 private:
 	// Whether this plugin had modifications made to it since calling Load.
 	// Saving the plugin clears this flag.
 	bool hasModifications = false;
 
+	// List of data files that have modifications. This is to avoid rewriting files
+	// that haven't been touched.
+	std::set<std::string> filesChanged;
+
 	std::unordered_map<std::string, std::vector<Node>> data;
 	std::list<DataNode> unknownNodes;
 
-	std::set<const Effect *> effects;
-	std::set<const Fleet *> fleets;
-	std::set<const Galaxy *> galaxies;
-	std::set<const Hazard *> hazards;
-	std::set<const Government *> governments;
-	std::set<const Outfit *> outfits;
-	std::set<const Sale<Outfit> *> outfitters;
-	std::set<const Planet *> planets;
-	std::set<const Ship *> ships;
-	std::set<const Sale<Ship> *> shipyards;
-	std::set<const System *> systems;
+	std::map<const Effect *, std::string> effects;
+	std::map<const Fleet *, std::string> fleets;
+	std::map<const Galaxy *, std::string> galaxies;
+	std::map<const Hazard *, std::string> hazards;
+	std::map<const Government *, std::string> governments;
+	std::map<const Outfit *, std::string> outfits;
+	std::map<const Sale<Outfit> *, std::string> outfitters;
+	std::map<const Planet *, std::string> planets;
+	std::map<const Ship *, std::string> ships;
+	std::map<const Sale<Ship> *, std::string> shipyards;
+	std::map<const System *, std::string> systems;
 };
 
+
+
+template <typename T>
+std::map<T, std::string> &Plugin::GetMapForNodeElement()
+{
+	const auto &This = *this;
+	return const_cast<std::map<T, std::string> &>(This.GetMapForNodeElement<T>());
+}
+
+
+
+template <typename T>
+const std::map<T, std::string> &Plugin::GetMapForNodeElement() const
+{
+	if constexpr(std::is_same_v<T, const Effect *>)
+		return effects;
+	else if constexpr(std::is_same_v<T, const Fleet *>)
+		return fleets;
+	else if constexpr(std::is_same_v<T, const Galaxy *>)
+		return galaxies;
+	else if constexpr(std::is_same_v<T, const Hazard *>)
+		return hazards;
+	else if constexpr(std::is_same_v<T, const Government *>)
+		return governments;
+	else if constexpr(std::is_same_v<T, const Outfit *>)
+		return outfits;
+	else if constexpr(std::is_same_v<T, const Sale<Outfit> *>)
+		return outfitters;
+	else if constexpr(std::is_same_v<T, const Planet *>)
+		return planets;
+	else if constexpr(std::is_same_v<T, const Ship *>)
+		return ships;
+	else if constexpr(std::is_same_v<T, const Sale<Ship> *>)
+		return shipyards;
+	else if constexpr(std::is_same_v<T, const System *>)
+		return systems;
+	else
+		assert(!"no map for T");
+}
 
 
 #endif

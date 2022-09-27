@@ -88,12 +88,12 @@ namespace {
 
 
 Editor::Editor(UI &panels) noexcept
-	: ui(panels),
-	effectEditor(*this, showEffectMenu), fleetEditor(*this, showFleetMenu), galaxyEditor(*this, showGalaxyMenu),
+	: effectEditor(*this, showEffectMenu), fleetEditor(*this, showFleetMenu), galaxyEditor(*this, showGalaxyMenu),
 	hazardEditor(*this, showHazardMenu),
 	governmentEditor(*this, showGovernmentMenu), outfitEditor(*this, showOutfitMenu), outfitterEditor(*this, showOutfitterMenu),
 	planetEditor(*this, showPlanetMenu), shipEditor(*this, showShipMenu), shipyardEditor(*this, showShipyardMenu),
-	systemEditor(*this, showSystemMenu)
+	systemEditor(*this, showSystemMenu),
+	ui(panels)
 {
 	StyleColorsGray();
 }
