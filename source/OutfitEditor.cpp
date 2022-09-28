@@ -47,6 +47,215 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 using namespace std;
 
 
+namespace {
+	constexpr array<string_view, 182> ATTRIBUTE_ORDER = {
+		"outfit space",
+		"engine capacity",
+		"weapon capacity",
+		"cargo space",
+		"capture attack",
+		"capture defense",
+		"atrocity",
+		"illegal",
+
+		"shields",
+		"shield generation",
+		"shield energy",
+		"shield heat",
+		"shield fuel",
+		"shield delay",
+		"depleted shield delay",
+		"hull",
+		"hull repair rate",
+		"hull energy",
+		"hull heat",
+		"repair delay",
+		"disabled repair delay",
+		"absolute threshold",
+		"threshold percentage",
+		"hull threshold",
+
+		"shield generation multiplier",
+		"shield energy multiplier",
+		"shield heat multiplier",
+		"shield fuel multiplier",
+		"hull repair multiplier",
+		"hull energy multiplier",
+		"hull energy multiplier",
+		"hull heat multiplier",
+		"hull fuel multiplier",
+
+		"energy capacity",
+		"energy generation",
+		"energy consumption",
+		"heat generation",
+
+		"ramscoop",
+		"solar collection",
+		"solar heat",
+
+		"fuel capacity",
+		"fuel consumption",
+		"fuel energy",
+		"fuel energy",
+		"fuel generation",
+
+		"thrust",
+		"thrusting energy",
+		"thrusting heat",
+		"thrusting shields",
+		"thrusting hull",
+		"thrusting discharge",
+		"thrusting corrosion",
+		"thrusting ion",
+		"thrusting ion",
+		"thrusting leakage",
+		"thrusting burn",
+		"thrusting slowing",
+		"thrusting disruption",
+		"turn",
+		"turning energy",
+		"turning heat",
+		"turning shields",
+		"turning hull",
+		"turning fuel",
+		"turning discharge",
+		"turning corrosion",
+		"turning ion",
+		"turning leakage",
+		"turning burn",
+		"turning slowing",
+		"turning disruption",
+		"reverse thrust",
+		"reverse thrusting energy",
+		"reverse thrusting heat",
+		"reverse thrusting shields",
+		"reverse thrusting hull",
+		"reverse thrusting fuel",
+		"reverse thrusting discharge",
+		"reverse thrusting corrosion",
+		"reverse thrusting ion",
+		"reverse thrusting leakage",
+		"reverse thrusting burn",
+		"reverse thrusting slowing",
+		"reverse thrusting disruption",
+		"afterburner thrust",
+		"afterburner energy",
+		"afterburner heat",
+		"afterburner fuel",
+		"afterburner shields",
+		"afterburner hull",
+		"afterburner discharge",
+		"afterburner ion",
+		"afterburner leakage",
+		"afterburner burn",
+		"afterburner slowing",
+		"afterburner disruption",
+
+		"cooling",
+		"active cooling",
+		"cooling energy",
+		"heat dissipation",
+		"heat capacity",
+		"overheat damage rate",
+		"overheat damage threshold",
+		"cooling inefficiency",
+		"atmosphere scan",
+		"cargo scan power",
+		"cargo scan speed",
+		"outfit scan power",
+		"outfit scan speed",
+		"scan interference",
+		"inscrutable",
+		"asteroid scan power",
+		"tactical scan power",
+
+		"hyperdrive",
+		"scram drive",
+		"jump drive",
+		"jump speed",
+		"jump fuel",
+		"jump range",
+
+		"banks",
+		"required crew",
+		"crew equivalent",
+
+		"gun ports",
+		"turret mounts",
+
+		"cloak",
+		"cloaking energy",
+		"cloaking fuel",
+		"cloaking heat",
+
+		"disruption resistance",
+		"disruption resistance energy",
+		"disruption resistance heat",
+		"disruption resistance fuel",
+		"ion resistance",
+		"ion resistance energy",
+		"ion resistance heat",
+		"ion resistance fuel",
+		"slowing resistance",
+		"slowing resistance energy",
+		"slowing resistance heat",
+		"slowing resistance fuel",
+		"discharge resistance",
+		"discharge resistance energy",
+		"discharge resistance heat",
+		"discharge resistance fuel",
+		"corrosion resistance",
+		"corrosion resistance energy",
+		"corrosion resistance heat",
+		"corrosion resistance fuel",
+		"leak resistance",
+		"leak resistance energy",
+		"leak resistance heat",
+		"leak resistance fuel",
+		"burn resistance",
+		"burn resistance energy",
+		"burn resistance heat",
+		"burn resistance fuel",
+		"piercing resistance",
+
+		"disruption protection",
+		"energy protection",
+		"force protection",
+		"fuel protection",
+		"heat protection",
+		"hull protection",
+		"ion protection",
+		"piercing protection",
+		"shield protection",
+		"slowing protection",
+		"discharge protection",
+		"corrosion protection",
+		"leak protection",
+		"burn protection",
+
+		"maintenance costs",
+		"operating costs",
+		"income",
+		"operating incoming",
+
+		"ammo",
+		"drag",
+		"installable",
+		"minable",
+		"map",
+		"radar jamming",
+		"self destruct",
+	};
+}
+
+
+const array<string_view, 182> &OutfitEditor::AttributesOrder()
+{
+	return ATTRIBUTE_ORDER;
+}
+
+
 
 OutfitEditor::OutfitEditor(Editor &editor, bool &show) noexcept
 	: TemplateEditor<Outfit>(editor, show)
@@ -875,19 +1084,6 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 	if(!diff || outfit->pluralName != diff->category)
 		if(outfit->pluralName != outfit->name + "s" || diff)
 			writer.Write("plural", outfit->pluralName);
-	if(!diff || outfit->cost != diff->cost)
-		if(outfit->cost || diff)
-			writer.Write("cost", outfit->cost);
-	if(!diff || outfit->mass != diff->mass)
-		if(outfit->mass || diff)
-			writer.Write("mass", outfit->mass);
-	if(!diff || outfit->flotsamSprite != diff->flotsamSprite)
-		if(outfit->flotsamSprite || diff)
-			writer.Write("flotsam sprite", outfit->flotsamSprite->Name());
-
-	if(!diff || outfit->thumbnail != diff->thumbnail)
-		if(outfit->thumbnail || diff)
-			writer.Write("thumbnail", outfit->thumbnail->Name());
 	if(!diff || outfit->licenses != diff->licenses) 
 		if(!outfit->licenses.empty())
 		{
@@ -896,11 +1092,34 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 				writer.WriteToken(license);
 			writer.Write();
 		}
+	if(!diff || outfit->cost != diff->cost)
+		if(outfit->cost || diff)
+			writer.Write("cost", outfit->cost);
+	if(!diff || outfit->thumbnail != diff->thumbnail)
+		if(outfit->thumbnail || diff)
+			writer.Write("thumbnail", outfit->thumbnail->Name());
+	if(!diff || outfit->flotsamSprite != diff->flotsamSprite)
+		if(outfit->flotsamSprite || diff)
+			writer.Write("flotsam sprite", outfit->flotsamSprite->Name());
+
+	if(!diff || outfit->mass != diff->mass)
+		if(outfit->mass || diff)
+			writer.Write("mass", outfit->mass);
 
 	if(!diff || outfit->attributes.AsBase() != diff->attributes.AsBase())
+	{
+		// Write the known attributes first.
+		for(string_view attribute : AttributesOrder())
+			if(auto val = outfit->attributes.Get(attribute.data()))
+				if(!diff || !Count(diff->attributes.AsBase(), make_pair(attribute.data(), val)))
+					writer.Write(attribute.data(), val);
+		// And unsorted attributes get put in the end.
 		for(auto it = outfit->attributes.begin(); it != outfit->attributes.end(); ++it)
-			if(!diff || !Count(diff->attributes.AsBase(), *it))
-				writer.Write(it->first, it->second);
+			if(auto ait = find(AttributesOrder().begin(), AttributesOrder().end(), it->first);
+					ait == AttributesOrder().end())
+				if(!diff || !Count(diff->attributes.AsBase(), *it))
+					writer.Write(it->first, it->second);
+	}
 
 	if(!diff || outfit->flareSprites != diff->flareSprites)
 		for(auto &&flareSprite : outfit->flareSprites)
@@ -977,36 +1196,6 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 		}
 	};
 
-	if(!diff || outfit->isSafe != diff->isSafe)
-		if(outfit->isSafe)
-		{
-			writeWeapon();
-			writer.Write("safe");
-		}
-	if(!diff || outfit->isPhasing != diff->isPhasing)
-		if(outfit->isPhasing)
-		{
-			writeWeapon();
-			writer.Write("phasing");
-		}
-	if(!diff || outfit->isDamageScaled != diff->isDamageScaled)
-		if(!outfit->isDamageScaled)
-		{
-			writeWeapon();
-			writer.Write("no damage scaling");
-		}
-	if(!diff || outfit->isParallel != diff->isParallel)
-		if(outfit->isParallel)
-		{
-			writeWeapon();
-			writer.Write("parallel");
-		}
-	if(!diff || outfit->isGravitational != diff->isGravitational)
-		if(outfit->isGravitational)
-		{
-			writeWeapon();
-			writer.Write("gravitational");
-		}
 	if(!diff || outfit->sprite != outfit->sprite)
 		if(outfit->sprite.HasSprite())
 		{
@@ -1019,21 +1208,20 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 			writeWeapon();
 			outfit->hardpointSprite.SaveSprite(writer, "hardpoint sprite");
 		}
+	if(!diff || outfit->hardpointOffset != diff->hardpointOffset)
+		if(outfit->hardpointOffset || diff)
+		{
+			writeWeapon();
+			if(!outfit->hardpointOffset.X())
+				writer.Write("hardpoint offset", -outfit->hardpointOffset.Y());
+			else
+				writer.Write("hardpoint offset", outfit->hardpointOffset.X(), -outfit->hardpointOffset.Y());
+		}
 	if(!diff || outfit->sound != diff->sound)
 		if(outfit->sound)
 		{
 			writeWeapon();
 			writer.Write("sound", outfit->sound->Name());
-		}
-	if(outfit->isWeapon && (!diff || outfit->ammo != diff->ammo))
-		if(outfit->ammo.first || diff)
-		{
-			writeWeapon();
-			writer.WriteToken("ammo");
-			writer.WriteToken(outfit->ammo.first->Name());
-			if(outfit->ammo.second != 1)
-				writer.WriteToken(outfit->ammo.second);
-			writer.Write();
 		}
 	if(!diff || outfit->icon != diff->icon)
 		if(outfit->icon)
@@ -1112,7 +1300,104 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 				writer.EndChild();
 			}
 		}
+	if(outfit->isWeapon && (!diff || outfit->ammo != diff->ammo))
+		if(outfit->ammo.first || diff)
+		{
+			writeWeapon();
+			writer.WriteToken("ammo");
+			writer.WriteToken(outfit->ammo.first->Name());
+			if(outfit->ammo.second != 1)
+				writer.WriteToken(outfit->ammo.second);
+			writer.Write();
+		}
+	if(!diff || outfit->rangeOverride != diff->rangeOverride)
+		if(outfit->rangeOverride || diff)
+		{
+			writeWeapon();
+			writer.Write("range override", outfit->rangeOverride);
+		}
+	if(!diff || outfit->velocityOverride != diff->velocityOverride)
+		if(outfit->velocityOverride || diff)
+		{
+			writeWeapon();
+			writer.Write("velocity override", outfit->velocityOverride);
+		}
 
+	if((!diff || outfit->isStreamed != diff->isStreamed) && hasWrittenWeapon)
+	{
+		if((outfit->MissileStrength() || outfit->AntiMissile()) && outfit->isStreamed)
+		{
+			writeWeapon();
+			writer.Write("stream");
+		}
+		if(!outfit->MissileStrength() && !outfit->AntiMissile() && !outfit->isStreamed)
+		{
+			writeWeapon();
+			writer.Write("cluster");
+		}
+	}
+
+	if(!diff || outfit->isSafe != diff->isSafe)
+		if(outfit->isSafe)
+		{
+			writeWeapon();
+			writer.Write("safe");
+		}
+	if(!diff || outfit->isPhasing != diff->isPhasing)
+		if(outfit->isPhasing)
+		{
+			writeWeapon();
+			writer.Write("phasing");
+		}
+	if(!diff || outfit->isDamageScaled != diff->isDamageScaled)
+		if(!outfit->isDamageScaled)
+		{
+			writeWeapon();
+			writer.Write("no damage scaling");
+		}
+	if(!diff || outfit->isParallel != diff->isParallel)
+		if(outfit->isParallel)
+		{
+			writeWeapon();
+			writer.Write("parallel");
+		}
+	if(!diff || outfit->isGravitational != diff->isGravitational)
+		if(outfit->isGravitational)
+		{
+			writeWeapon();
+			writer.Write("gravitational");
+		}
+
+	if(!diff || outfit->antiMissile != diff->antiMissile)
+		if(outfit->antiMissile || diff)
+		{
+			writeWeapon();
+			writer.Write("anti-missile", outfit->antiMissile);
+		}
+	if(!diff || outfit->inaccuracy != diff->inaccuracy)
+		if(outfit->inaccuracy || diff)
+		{
+			writeWeapon();
+			writer.Write("inaccuracy", outfit->inaccuracy);
+		}
+	if(!diff || outfit->turretTurn != diff->turretTurn)
+		if(outfit->turretTurn || diff)
+		{
+			writeWeapon();
+			writer.Write("turret turn", outfit->turretTurn);
+		}
+	if(!diff || outfit->velocity != diff->velocity)
+		if(outfit->velocity || diff)
+		{
+			writeWeapon();
+			writer.Write("velocity", outfit->velocity);
+		}
+	if(!diff || outfit->randomVelocity != diff->randomVelocity)
+		if(outfit->randomVelocity || diff)
+		{
+			writeWeapon();
+			writer.Write("random velocity", outfit->randomVelocity);
+		}
 	if(!diff || outfit->lifetime != diff->lifetime)
 		if(outfit->lifetime || diff)
 		{
@@ -1124,6 +1409,12 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 		{
 			writeWeapon();
 			writer.Write("random lifetime", outfit->randomLifetime);
+		}
+	if(!diff || outfit->acceleration != diff->acceleration)
+		if(outfit->acceleration || diff)
+		{
+			writeWeapon();
+			writer.Write("acceleration", outfit->acceleration);
 		}
 	if(!diff || outfit->reload != diff->reload)
 		if(outfit->reload != 1. || diff)
@@ -1142,99 +1433,6 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 		{
 			writeWeapon();
 			writer.Write("burst count", outfit->burstCount);
-		}
-	if(!diff || outfit->homing != diff->homing)
-		if(outfit->homing || diff)
-		{
-			writeWeapon();
-			writer.Write("homing", outfit->homing);
-		}
-	if(!diff || outfit->missileStrength != diff->missileStrength)
-		if(outfit->missileStrength || diff)
-		{
-			writeWeapon();
-			writer.Write("missile strength", outfit->missileStrength);
-		}
-	if(!diff || outfit->antiMissile != diff->antiMissile)
-		if(outfit->antiMissile || diff)
-		{
-			writeWeapon();
-			writer.Write("anti-missile", outfit->antiMissile);
-		}
-	if(!diff || outfit->velocity != diff->velocity)
-		if(outfit->velocity || diff)
-		{
-			writeWeapon();
-			writer.Write("velocity", outfit->velocity);
-		}
-	if(!diff || outfit->randomVelocity != diff->randomVelocity)
-		if(outfit->randomVelocity || diff)
-		{
-			writeWeapon();
-			writer.Write("random velocity", outfit->randomVelocity);
-		}
-	if(!diff || outfit->acceleration != diff->acceleration)
-		if(outfit->acceleration || diff)
-		{
-			writeWeapon();
-			writer.Write("acceleration", outfit->acceleration);
-		}
-	if(!diff || outfit->drag != diff->drag)
-		if(outfit->drag || diff)
-		{
-			writeWeapon();
-			writer.Write("drag", outfit->drag);
-		}
-	if(!diff || outfit->hardpointOffset != diff->hardpointOffset)
-		if(outfit->hardpointOffset || diff)
-		{
-			writeWeapon();
-			if(!outfit->hardpointOffset.X())
-				writer.Write("hardpoint offset", -outfit->hardpointOffset.Y());
-			else
-				writer.Write("hardpoint offset", outfit->hardpointOffset.X(), -outfit->hardpointOffset.Y());
-		}
-	if(!diff || outfit->turn != diff->turn)
-		if(outfit->turn || diff)
-		{
-			writeWeapon();
-			writer.Write("turn", outfit->turn);
-		}
-	if(!diff || outfit->inaccuracy != diff->inaccuracy)
-		if(outfit->inaccuracy || diff)
-		{
-			writeWeapon();
-			writer.Write("inaccuracy", outfit->inaccuracy);
-		}
-	if(!diff || outfit->turretTurn != diff->turretTurn)
-		if(outfit->turretTurn || diff)
-		{
-			writeWeapon();
-			writer.Write("turret turn", outfit->turretTurn);
-		}
-	if(!diff || outfit->tracking != diff->tracking)
-		if(outfit->tracking || diff)
-		{
-			writeWeapon();
-			writer.Write("tracking", outfit->tracking);
-		}
-	if(!diff || outfit->opticalTracking != diff->opticalTracking)
-		if(outfit->opticalTracking || diff)
-		{
-			writeWeapon();
-			writer.Write("optical tracking", outfit->opticalTracking);
-		}
-	if(!diff || outfit->infraredTracking != diff->infraredTracking)
-		if(outfit->infraredTracking || diff)
-		{
-			writeWeapon();
-			writer.Write("infrared tracking", outfit->infraredTracking);
-		}
-	if(!diff || outfit->radarTracking != diff->radarTracking)
-		if(outfit->radarTracking || diff)
-		{
-			writeWeapon();
-			writer.Write("radar tracking", outfit->radarTracking);
 		}
 	if(!diff || outfit->firingEnergy != diff->firingEnergy)
 		if(outfit->firingEnergy || diff)
@@ -1344,17 +1542,59 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 			writeWeapon();
 			writer.Write("relative firing shields", outfit->relativeFiringShields);
 		}
-	if(!diff || outfit->splitRange != diff->splitRange)
-		if(outfit->splitRange || diff)
+	if(!diff || outfit->drag != diff->drag)
+		if(outfit->drag || diff)
 		{
 			writeWeapon();
-			writer.Write("split range", outfit->splitRange);
+			writer.Write("drag", outfit->drag);
+		}
+	if(!diff || outfit->turn != diff->turn)
+		if(outfit->turn || diff)
+		{
+			writeWeapon();
+			writer.Write("turn", outfit->turn);
+		}
+	if(!diff || outfit->homing != diff->homing)
+		if(outfit->homing || diff)
+		{
+			writeWeapon();
+			writer.Write("homing", outfit->homing);
+		}
+	if(!diff || outfit->tracking != diff->tracking)
+		if(outfit->tracking || diff)
+		{
+			writeWeapon();
+			writer.Write("tracking", outfit->tracking);
+		}
+	if(!diff || outfit->radarTracking != diff->radarTracking)
+		if(outfit->radarTracking || diff)
+		{
+			writeWeapon();
+			writer.Write("radar tracking", outfit->radarTracking);
+		}
+	if(!diff || outfit->infraredTracking != diff->infraredTracking)
+		if(outfit->infraredTracking || diff)
+		{
+			writeWeapon();
+			writer.Write("infrared tracking", outfit->infraredTracking);
+		}
+	if(!diff || outfit->opticalTracking != diff->opticalTracking)
+		if(outfit->opticalTracking || diff)
+		{
+			writeWeapon();
+			writer.Write("optical tracking", outfit->opticalTracking);
 		}
 	if(!diff || outfit->triggerRadius != diff->triggerRadius)
 		if(outfit->triggerRadius || diff)
 		{
 			writeWeapon();
 			writer.Write("trigger radius", outfit->triggerRadius);
+		}
+	if(!diff || outfit->splitRange != diff->splitRange)
+		if(outfit->splitRange || diff)
+		{
+			writeWeapon();
+			writer.Write("split range", outfit->splitRange);
 		}
 	if(!diff || outfit->blastRadius != diff->blastRadius)
 		if(outfit->blastRadius || diff)
@@ -1464,29 +1704,17 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 			writeWeapon();
 			writer.Write("relative energy damage", outfit->damage[Weapon::RELATIVE_ENERGY_DAMAGE]);
 		}
-	if(!diff || outfit->damage[Weapon::HIT_FORCE] != diff->damage[Weapon::HIT_FORCE])
-		if(outfit->damage[Weapon::HIT_FORCE] || diff)
-		{
-			writeWeapon();
-			writer.Write("hit force", outfit->damage[Weapon::HIT_FORCE]);
-		}
 	if(!diff || outfit->piercing != diff->piercing)
 		if(outfit->piercing || diff)
 		{
 			writeWeapon();
 			writer.Write("piercing", outfit->piercing);
 		}
-	if(!diff || outfit->rangeOverride != diff->rangeOverride)
-		if(outfit->rangeOverride || diff)
+	if(!diff || outfit->damage[Weapon::HIT_FORCE] != diff->damage[Weapon::HIT_FORCE])
+		if(outfit->damage[Weapon::HIT_FORCE] || diff)
 		{
 			writeWeapon();
-			writer.Write("range override", outfit->rangeOverride);
-		}
-	if(!diff || outfit->velocityOverride != diff->velocityOverride)
-		if(outfit->velocityOverride || diff)
-		{
-			writeWeapon();
-			writer.Write("velocity override", outfit->velocityOverride);
+			writer.Write("hit force", outfit->damage[Weapon::HIT_FORCE]);
 		}
 	if(!diff || outfit->damageDropoffRange != diff->damageDropoffRange)
 		if(outfit->hasDamageDropoff || diff)
@@ -1504,20 +1732,12 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 			writeWeapon();
 			writer.Write("dropoff modifier", outfit->damageDropoffModifier);
 		}
-
-	if((!diff || outfit->isStreamed != diff->isStreamed) && hasWrittenWeapon)
-	{
-		if((outfit->MissileStrength() || outfit->AntiMissile()) && outfit->isStreamed)
+	if(!diff || outfit->missileStrength != diff->missileStrength)
+		if(outfit->missileStrength || diff)
 		{
 			writeWeapon();
-			writer.Write("stream");
+			writer.Write("missile strength", outfit->missileStrength);
 		}
-		if(!outfit->MissileStrength() && !outfit->AntiMissile() && !outfit->isStreamed)
-		{
-			writeWeapon();
-			writer.Write("cluster");
-		}
-	}
 	if(hasWrittenWeapon)
 		writer.EndChild();
 

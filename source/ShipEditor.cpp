@@ -890,6 +890,16 @@ void ShipEditor::WriteToFile(DataWriter &writer, const Ship *ship) const
 			writeAttributes();
 			writer.Write("category", ship->baseAttributes.Category());
 		}
+	if(!diff || ship->attributes.licenses != diff->attributes.licenses)
+		if(!ship->attributes.Licenses().empty())
+		{
+			writeAttributes();
+			writer.WriteToken("licenses");
+			for(auto &&license : ship->baseAttributes.Licenses())
+				if(!diff || !diff->attributes.Get(license))
+					writer.WriteToken(license);
+			writer.Write();
+		}
 	if(!diff || ship->baseAttributes.Cost() != diff->baseAttributes.Cost())
 		if(ship->baseAttributes.Cost() || diff)
 		{
@@ -901,17 +911,6 @@ void ShipEditor::WriteToFile(DataWriter &writer, const Ship *ship) const
 		{
 			writeAttributes();
 			writer.Write("mass", ship->baseAttributes.Mass() - (diff ? diff->baseAttributes.Mass() : 0.));
-		}
-
-	if(!diff || ship->attributes.licenses != diff->attributes.licenses)
-		if(!ship->attributes.Licenses().empty())
-		{
-			writeAttributes();
-			writer.WriteToken("licenses");
-			for(auto &&license : ship->baseAttributes.Licenses())
-				if(!diff || !diff->attributes.Get(license))
-					writer.WriteToken(license);
-			writer.Write();
 		}
 
 	if(!diff || ship->baseAttributes.FlareSprites() != diff->baseAttributes.FlareSprites())
@@ -1027,30 +1026,31 @@ void ShipEditor::WriteToFile(DataWriter &writer, const Ship *ship) const
 					writer.Write("hyperdrive out sound", it.first->Name());
 				}
 
-	auto shipAttributes = ship->baseAttributes.Attributes().AsBase();
-	auto diffAttributes = diff ? diff->baseAttributes.Attributes().AsBase() : shipAttributes;
-	auto it = find_if(shipAttributes.begin(), shipAttributes.end(), [](const std::pair<const char *, double> &pair) { return string(pair.first) == "gun ports"; });
-	if(it != shipAttributes.end())
-		shipAttributes.erase(it);
-	it = find_if(shipAttributes.begin(), shipAttributes.end(), [](const std::pair<const char *, double> &pair) { return string(pair.first) == "turret mounts"; });
-	if(it != shipAttributes.end())
-		shipAttributes.erase(it);
+	auto shipAttributes = ship->baseAttributes.Attributes();
+	auto diffAttributes = diff ? diff->baseAttributes.Attributes() : shipAttributes;
+	shipAttributes.Remove("gun ports");
+	shipAttributes.Remove("turret mounts");
+	diffAttributes.Remove("gun ports");
+	diffAttributes.Remove("turret mounts");
 
-	it = find_if(diffAttributes.begin(), diffAttributes.end(), [](const std::pair<const char *, double> &pair) { return string(pair.first) == "gun ports"; });
-	if(it != diffAttributes.end())
-		diffAttributes.erase(it);
-	it = find_if(diffAttributes.begin(), diffAttributes.end(), [](const std::pair<const char *, double> &pair) { return string(pair.first) == "turret mounts"; });
-	if(it != diffAttributes.end())
-		diffAttributes.erase(it);
+	if(!diff || shipAttributes.AsBase() != diffAttributes.AsBase())
+	{
+		// Write the known attributes first.
+		for(string_view attribute : OutfitEditor::AttributesOrder())
+			if(auto val = shipAttributes.Get(attribute.data()))
+				if(!diff || !Count(diffAttributes.AsBase(), make_pair(attribute.data(), val)))
+					writer.Write(attribute.data(), val);
 
-	Dictionary diffDict(diffAttributes);
-	if(!diff || shipAttributes != diffAttributes)
+		// And unsorted attributes get put in the end.
 		for(auto it = shipAttributes.begin(); it != shipAttributes.end(); ++it)
-			if(!diff || !Count(diffAttributes, *it))
-			{
-				writeAttributes();
-				writer.Write(it->first, it->second - (diff ? diffDict.Get(it->first) : 0.));
-			}
+			if(auto ait = find(OutfitEditor::AttributesOrder().begin(), OutfitEditor::AttributesOrder().end(), it->first);
+					ait == OutfitEditor::AttributesOrder().end())
+				if(!diff || !Count(diffAttributes.AsBase(), *it))
+				{
+					writeAttributes();
+					writer.Write(it->first, it->second - (diff ? diffAttributes.Get(it->first) : 0.));
+				}
+	}
 
 	bool hasWrittenWeapon = false;
 	auto writeWeapon = [&hasWrittenWeapon, &writer]()
