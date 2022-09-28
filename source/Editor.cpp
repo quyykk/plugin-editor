@@ -65,8 +65,8 @@ namespace {
 		string value;
 		nfdchar_t *path = nullptr;
 		
-		auto result = folders ? NFD_PickFolder(&path, openDefault ? Files::Config().data() : nullptr)
-			: NFD_OpenDialog(&path, nullptr, 0, openDefault ? Files::Config().data() : nullptr);
+		auto result = folders ? NFD_PickFolder(&path, openDefault ? (Files::Config() + "plugins/").data() : nullptr)
+			: NFD_OpenDialog(&path, nullptr, 0, openDefault ? (Files::Config() + "plugins/").data() : nullptr);
 		if(result == NFD_OKAY)
 		{
 			value = path;
