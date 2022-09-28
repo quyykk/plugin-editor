@@ -404,6 +404,7 @@ void SystemEditor::RenderSystem()
 	if(ImGui::InputDouble2Ex("pos", pos))
 	{
 		object->position.Set(pos[0], pos[1]);
+		UpdateMap();
 		SetDirty();
 	}
 
