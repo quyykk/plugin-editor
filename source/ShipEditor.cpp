@@ -910,7 +910,7 @@ void ShipEditor::WriteToFile(DataWriter &writer, const Ship *ship) const
 		if(ship->baseAttributes.Mass() || diff)
 		{
 			writeAttributes();
-			writer.Write("mass", ship->baseAttributes.Mass() - (diff ? diff->baseAttributes.Mass() : 0.));
+			writer.WriteQuoted("mass", ship->baseAttributes.Mass() - (diff ? diff->baseAttributes.Mass() : 0.));
 		}
 
 	if(!diff || ship->baseAttributes.FlareSprites() != diff->baseAttributes.FlareSprites())
@@ -1039,7 +1039,7 @@ void ShipEditor::WriteToFile(DataWriter &writer, const Ship *ship) const
 		for(string_view attribute : OutfitEditor::AttributesOrder())
 			if(auto val = shipAttributes.Get(attribute.data()))
 				if(!diff || !Count(diffAttributes.AsBase(), make_pair(attribute.data(), val)))
-					writer.Write(attribute.data(), val);
+					writer.WriteQuoted(attribute.data(), val);
 
 		// And unsorted attributes get put in the end.
 		for(auto it = shipAttributes.begin(); it != shipAttributes.end(); ++it)
@@ -1048,7 +1048,7 @@ void ShipEditor::WriteToFile(DataWriter &writer, const Ship *ship) const
 				if(!diff || !Count(diffAttributes.AsBase(), *it))
 				{
 					writeAttributes();
-					writer.Write(it->first, it->second - (diff ? diffAttributes.Get(it->first) : 0.));
+					writer.WriteQuoted(it->first, it->second - (diff ? diffAttributes.Get(it->first) : 0.));
 				}
 	}
 

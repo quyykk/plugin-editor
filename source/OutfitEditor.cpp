@@ -1104,7 +1104,7 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 
 	if(!diff || outfit->mass != diff->mass)
 		if(outfit->mass || diff)
-			writer.Write("mass", outfit->mass);
+			writer.WriteQuoted("mass", outfit->mass);
 
 	if(!diff || outfit->attributes.AsBase() != diff->attributes.AsBase())
 	{
@@ -1112,13 +1112,13 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 		for(string_view attribute : AttributesOrder())
 			if(auto val = outfit->attributes.Get(attribute.data()))
 				if(!diff || !Count(diff->attributes.AsBase(), make_pair(attribute.data(), val)))
-					writer.Write(attribute.data(), val);
+					writer.WriteQuoted(attribute.data(), val);
 		// And unsorted attributes get put in the end.
 		for(auto it = outfit->attributes.begin(); it != outfit->attributes.end(); ++it)
 			if(auto ait = find(AttributesOrder().begin(), AttributesOrder().end(), it->first);
 					ait == AttributesOrder().end())
 				if(!diff || !Count(diff->attributes.AsBase(), *it))
-					writer.Write(it->first, it->second);
+					writer.WriteQuoted(it->first, it->second);
 	}
 
 	if(!diff || outfit->flareSprites != diff->flareSprites)
@@ -1287,7 +1287,7 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 			writeWeapon();
 			for(auto &&submunition : outfit->submunitions)
 			{
-				writer.WriteToken("submunition");
+				writer.WriteToken("submunition", true);
 				writer.WriteToken(submunition.weapon->Name());
 				if(submunition.count > 1)
 					writer.WriteToken(submunition.count);
@@ -1328,12 +1328,12 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 		if((outfit->MissileStrength() || outfit->AntiMissile()) && outfit->isStreamed)
 		{
 			writeWeapon();
-			writer.Write("stream");
+			writer.WriteQuoted("stream");
 		}
 		if(!outfit->MissileStrength() && !outfit->AntiMissile() && !outfit->isStreamed)
 		{
 			writeWeapon();
-			writer.Write("cluster");
+			writer.WriteQuoted("cluster");
 		}
 	}
 
@@ -1341,13 +1341,13 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 		if(outfit->isSafe)
 		{
 			writeWeapon();
-			writer.Write("safe");
+			writer.WriteQuoted("safe");
 		}
 	if(!diff || outfit->isPhasing != diff->isPhasing)
 		if(outfit->isPhasing)
 		{
 			writeWeapon();
-			writer.Write("phasing");
+			writer.WriteQuoted("phasing");
 		}
 	if(!diff || outfit->isDamageScaled != diff->isDamageScaled)
 		if(!outfit->isDamageScaled)
@@ -1359,26 +1359,26 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 		if(outfit->isParallel)
 		{
 			writeWeapon();
-			writer.Write("parallel");
+			writer.WriteQuoted("parallel");
 		}
 	if(!diff || outfit->isGravitational != diff->isGravitational)
 		if(outfit->isGravitational)
 		{
 			writeWeapon();
-			writer.Write("gravitational");
+			writer.WriteQuoted("gravitational");
 		}
 
 	if(!diff || outfit->antiMissile != diff->antiMissile)
 		if(outfit->antiMissile || diff)
 		{
 			writeWeapon();
-			writer.Write("anti-missile", outfit->antiMissile);
+			writer.WriteQuoted("anti-missile", outfit->antiMissile);
 		}
 	if(!diff || outfit->inaccuracy != diff->inaccuracy)
 		if(outfit->inaccuracy || diff)
 		{
 			writeWeapon();
-			writer.Write("inaccuracy", outfit->inaccuracy);
+			writer.WriteQuoted("inaccuracy", outfit->inaccuracy);
 		}
 	if(!diff || outfit->turretTurn != diff->turretTurn)
 		if(outfit->turretTurn || diff)
@@ -1390,7 +1390,7 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 		if(outfit->velocity || diff)
 		{
 			writeWeapon();
-			writer.Write("velocity", outfit->velocity);
+			writer.WriteQuoted("velocity", outfit->velocity);
 		}
 	if(!diff || outfit->randomVelocity != diff->randomVelocity)
 		if(outfit->randomVelocity || diff)
@@ -1414,13 +1414,13 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 		if(outfit->acceleration || diff)
 		{
 			writeWeapon();
-			writer.Write("acceleration", outfit->acceleration);
+			writer.WriteQuoted("acceleration", outfit->acceleration);
 		}
 	if(!diff || outfit->reload != diff->reload)
 		if(outfit->reload != 1. || diff)
 		{
 			writeWeapon();
-			writer.Write("reload", outfit->reload);
+			writer.WriteQuoted("reload", outfit->reload);
 		}
 	if(!diff || outfit->burstReload != diff->burstReload)
 		if(outfit->burstReload != 1. || diff)
@@ -1546,25 +1546,25 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 		if(outfit->drag || diff)
 		{
 			writeWeapon();
-			writer.Write("drag", outfit->drag);
+			writer.WriteQuoted("drag", outfit->drag);
 		}
 	if(!diff || outfit->turn != diff->turn)
 		if(outfit->turn || diff)
 		{
 			writeWeapon();
-			writer.Write("turn", outfit->turn);
+			writer.WriteQuoted("turn", outfit->turn);
 		}
 	if(!diff || outfit->homing != diff->homing)
 		if(outfit->homing || diff)
 		{
 			writeWeapon();
-			writer.Write("homing", outfit->homing);
+			writer.WriteQuoted("homing", outfit->homing);
 		}
 	if(!diff || outfit->tracking != diff->tracking)
 		if(outfit->tracking || diff)
 		{
 			writeWeapon();
-			writer.Write("tracking", outfit->tracking);
+			writer.WriteQuoted("tracking", outfit->tracking);
 		}
 	if(!diff || outfit->radarTracking != diff->radarTracking)
 		if(outfit->radarTracking || diff)
@@ -1708,7 +1708,7 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 		if(outfit->piercing || diff)
 		{
 			writeWeapon();
-			writer.Write("piercing", outfit->piercing);
+			writer.WriteQuoted("piercing", outfit->piercing);
 		}
 	if(!diff || outfit->damage[Weapon::HIT_FORCE] != diff->damage[Weapon::HIT_FORCE])
 		if(outfit->damage[Weapon::HIT_FORCE] || diff)
