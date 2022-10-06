@@ -331,6 +331,7 @@ void SystemEditor::Render()
 		searchBox.clear();
 		editor.MapPanel()->Select(object);
 		editor.SystemViewPanel()->Select(object);
+		editor.GetArenaPanel()->SetSystem(object);
 	}
 
 	ImGui::Separator();

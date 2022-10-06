@@ -319,6 +319,10 @@ target_sources(Editor PRIVATE
 	../endless-sky/source/text/layout.hpp
 	../endless-sky/source/text/truncate.hpp
 
+	ArenaControl.cpp
+	ArenaControl.h
+	ArenaPanel.cpp
+	ArenaPanel.h
 	Editor.cpp
 	Editor.h
 	EffectEditor.cpp

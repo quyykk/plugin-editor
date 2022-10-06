@@ -93,7 +93,7 @@ Editor::Editor(UI &panels) noexcept
 	governmentEditor(*this, showGovernmentMenu), outfitEditor(*this, showOutfitMenu), outfitterEditor(*this, showOutfitterMenu),
 	planetEditor(*this, showPlanetMenu), shipEditor(*this, showShipMenu), shipyardEditor(*this, showShipyardMenu),
 	systemEditor(*this, showSystemMenu),
-	ui(panels)
+	ui(panels), arenaControl(*this, systemEditor)
 {
 	StyleColorsGray();
 }
@@ -106,6 +106,8 @@ void Editor::Initialize()
 	mapEditorPanel = make_shared<MapEditorPanel>(*this, &planetEditor, &systemEditor);
 	mainEditorPanel = make_shared<MainEditorPanel>(*this, &planetEditor, &systemEditor);
 	outfitterEditorPanel = make_shared<OutfitterEditorPanel>(*this, shipEditor);
+	arenaPanel = make_shared<ArenaPanel>(*this, systemEditor);
+	arenaControl.SetArena(arenaPanel);
 
 	// The opening panel should be the map editor panel. It is always open and can't be closed.
 	ui.Push(mapEditorPanel);
@@ -146,6 +148,13 @@ const shared_ptr<MainEditorPanel> &Editor::SystemViewPanel() const
 const shared_ptr<OutfitterEditorPanel> &Editor::OutfitterPanel() const
 {
 	return outfitterEditorPanel;
+}
+
+
+
+const shared_ptr<ArenaPanel> &Editor::GetArenaPanel() const
+{
+	return arenaPanel;
 }
 
 
@@ -242,6 +251,10 @@ void Editor::RenderMain()
 		MainEditorPanel::RenderProperties(systemEditor, showMainEditorPanelProperties);
 	if(showOutfitterEditorPanelProperties)
 		OutfitterEditorPanel::RenderProperties(showOutfitterEditorPanelProperties);
+	if(showArenaPanelProperties)
+		ArenaPanel::RenderProperties(systemEditor, showArenaPanelProperties);
+	if(showArenaControl)
+		arenaControl.Render(showArenaControl);
 
 	const bool hasChanges = plugin.HasChanges();
 
@@ -305,7 +318,7 @@ void Editor::RenderMain()
 			ImGui::MenuItem("Shipyard", nullptr, &showShipyardMenu);
 			if(ImGui::MenuItem("System", nullptr, &showSystemMenu))
 			{
-				if(ui.Top() != mapEditorPanel && ui.Top() != mainEditorPanel)
+				if(ui.Top() != mapEditorPanel && ui.Top() != mainEditorPanel && ui.Top() != arenaPanel)
 					ui.Push(mapEditorPanel);
 			}
 			ImGui::MenuItem("Planet", nullptr, &showPlanetMenu);
@@ -320,6 +333,12 @@ void Editor::RenderMain()
 			if(ImGui::MenuItem("Outfitter"))
 				if(ui.Top() != outfitterEditorPanel)
 					ui.Push(outfitterEditorPanel);
+			if(ImGui::MenuItem("Arena"))
+			{
+				showArenaControl = true;
+				if(ui.Top() != arenaPanel)
+					ui.Push(arenaPanel);
+			}
 			ImGui::EndMenu();
 		}
 
@@ -327,6 +346,7 @@ void Editor::RenderMain()
 		{
 			ImGui::MenuItem("System View", nullptr, &showMainEditorPanelProperties);
 			ImGui::MenuItem("Outfitter", nullptr, &showOutfitterEditorPanelProperties);
+			ImGui::MenuItem("Arena", nullptr, &showArenaPanelProperties);
 			ImGui::EndMenu();
 		}
 
@@ -600,10 +620,12 @@ void Editor::ResetPanels()
 	ui.Pop(mapEditorPanel.get());
 	ui.Pop(mainEditorPanel.get());
 	ui.Pop(outfitterEditorPanel.get());
+	ui.Pop(arenaPanel.get());
 
 	mapEditorPanel.reset();
 	mainEditorPanel.reset();
 	outfitterEditorPanel.reset();
+	arenaPanel.reset();
 }
 
 
@@ -676,6 +698,8 @@ bool Editor::OpenPlugin(const string &plugin)
 			mapEditorPanel = make_shared<MapEditorPanel>(*this, &planetEditor, &systemEditor);
 			mainEditorPanel = make_shared<MainEditorPanel>(*this, &planetEditor, &systemEditor);
 			outfitterEditorPanel = make_shared<OutfitterEditorPanel>(*this, shipEditor);
+			arenaPanel = make_shared<ArenaPanel>(*this, systemEditor);
+			arenaControl.SetArena(arenaPanel);
 
 			ui.Push(mapEditorPanel);
 		}, showEditor));
@@ -728,6 +752,8 @@ bool Editor::OpenGameData(const string &game)
 			mapEditorPanel = make_shared<MapEditorPanel>(*this, &planetEditor, &systemEditor);
 			mainEditorPanel = make_shared<MainEditorPanel>(*this, &planetEditor, &systemEditor);
 			outfitterEditorPanel = make_shared<OutfitterEditorPanel>(*this, shipEditor);
+			arenaPanel = make_shared<ArenaPanel>(*this, systemEditor);
+			arenaControl.SetArena(arenaPanel);
 
 			ui.Push(mapEditorPanel);
 		}, showEditor));

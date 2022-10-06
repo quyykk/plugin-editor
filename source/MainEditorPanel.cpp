@@ -106,6 +106,9 @@ MainEditorPanel::MainEditorPanel(const Editor &editor, PlanetEditor *planetEdito
 
 void MainEditorPanel::Step()
 {
+	if(GetUI()->Top().get() != this)
+		return;
+
 	UpdateSystem();
 
 	double zoomTarget = ViewZoom();

@@ -466,6 +466,7 @@ void MapEditorPanel::Select(const System *system, bool appendSelection)
 	selectedSystems.push_back(system);
 	systemEditor->Select(selectedSystems.back());
 	editor.SystemViewPanel()->Select(selectedSystems.back());
+	editor.GetArenaPanel()->SetSystem(selectedSystems.back());
 	UpdateJumpDistance();
 }
 
@@ -485,6 +486,7 @@ void MapEditorPanel::Find(const string &name)
 				selectedSystems.push_back(&it.second);
 				systemEditor->Select(selectedSystems.back());
 				editor.SystemViewPanel()->Select(selectedSystems.back());
+				editor.GetArenaPanel()->SetSystem(selectedSystems.back());
 				CenterOnSystem();
 				if(!index)
 					return;
@@ -501,6 +503,7 @@ void MapEditorPanel::Find(const string &name)
 				selectedSystems.push_back(it.second.GetSystem());
 				systemEditor->Select(selectedSystems.back());
 				editor.SystemViewPanel()->Select(selectedSystems.back());
+				editor.GetArenaPanel()->SetSystem(selectedSystems.back());
 				CenterOnSystem();
 				if(!index)
 					return;

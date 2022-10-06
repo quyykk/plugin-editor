@@ -15,6 +15,8 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 #include "GameAssets.h"
 
+#include "ArenaControl.h"
+#include "ArenaPanel.h"
 #include "EffectEditor.h"
 #include "FleetEditor.h"
 #include "GalaxyEditor.h"
@@ -85,6 +87,7 @@ public:
 	const std::shared_ptr<MapEditorPanel> &MapPanel() const;
 	const std::shared_ptr<MainEditorPanel> &SystemViewPanel() const;
 	const std::shared_ptr<OutfitterEditorPanel> &OutfitterPanel() const;
+	const std::shared_ptr<ArenaPanel> &GetArenaPanel() const;
 
 
 private:
@@ -125,6 +128,9 @@ private:
 	std::shared_ptr<MainEditorPanel> mainEditorPanel;
 	std::shared_ptr<OutfitterEditorPanel> outfitterEditorPanel;
 
+	std::shared_ptr<ArenaPanel> arenaPanel;
+	ArenaControl arenaControl;
+
 	Plugin plugin;
 	std::string currentPluginPath;
 	bool isGameData = false;
@@ -132,6 +138,8 @@ private:
 	bool showConfirmationDialog = false;
 	bool showMainEditorPanelProperties = false;
 	bool showOutfitterEditorPanelProperties = false;
+	bool showArenaPanelProperties = false;
+	bool showArenaControl = false;
 
 	bool showEffectMenu = false;
 	bool showFleetMenu = false;
