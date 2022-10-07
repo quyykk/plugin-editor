@@ -32,8 +32,18 @@
 		"libjpeg-turbo",
 		"libmad",
 		{
-			"name": "glew",
-			"platform": "!osx"
+			"name": "glad",
+			"features": ["gl-api-30", "extensions"]
+		},
+		{
+			"name": "glad",
+			"features": ["wgl"],
+			"platform": "windows"
+		},
+		{
+			"name": "glad",
+			"features": ["glx", "gles2-api-30"],
+			"platform": "linux"
 		},
 		{
 			"name": "libuuid",

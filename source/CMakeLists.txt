@@ -297,8 +297,6 @@ target_sources(Editor PRIVATE
 	../endless-sky/source/WeightedList.h
 	../endless-sky/source/comparators/ByGivenOrder.h
 	../endless-sky/source/comparators/ByName.h
-	../endless-sky/source/opengl.cpp
-	../endless-sky/source/opengl.h
 	../endless-sky/source/pi.h
 	../endless-sky/source/shift.h
 	../endless-sky/source/text/DisplayText.cpp
@@ -362,4 +360,6 @@ target_sources(Editor PRIVATE
 	Version.h.in
 	imgui_ex.cpp
 	imgui_ex.h
+	opengl.cpp
+	opengl.h
 )

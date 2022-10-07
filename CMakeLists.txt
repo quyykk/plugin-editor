@@ -38,9 +38,7 @@ find_package(SDL2 CONFIG REQUIRED)
 find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
 find_package(rapidfuzz CONFIG REQUIRED)
-if(NOT APPLE)
-	find_package(GLEW REQUIRED)
-endif()
+find_package(glad CONFIG REQUIRED)
 
 # Only very new versions of OpenAL provide a config package, so try to find it manually.
 find_package(OpenAL CONFIG QUIET)
@@ -114,7 +112,7 @@ endif()
 
 # Add the source files to the target.
 add_subdirectory(source)
-target_include_directories(Editor PRIVATE endless-sky/source)
+target_include_directories(Editor PRIVATE endless-sky/source source/)
 
 # The 'mingw32' lib needs to appear first.
 if(MINGW)
@@ -183,14 +181,14 @@ if(ES_GLES)
 	target_compile_definitions(Editor PUBLIC ES_GLES)
 else()
 	find_package(OpenGL REQUIRED)
-	target_link_libraries(Editor PRIVATE OpenGL::GL)
+	target_link_libraries(Editor PRIVATE OpenGL::GL glad::glad)
 
 	if(APPLE)
 		# Apple deprecated OpenGL in MacOS 10.14, but we don't care.
 		target_compile_definitions(Editor PUBLIC GL_SILENCE_DEPRECATION)
-	else()
-		# GLEW is only needed on Linux and Windows.
-		target_link_libraries(Editor PRIVATE GLEW::GLEW)
+	elseif(UNIX)
+		# For GLX support on Linux.
+		target_link_libraries(Editor PRIVATE X11)
 	endif()
 endif()
 
