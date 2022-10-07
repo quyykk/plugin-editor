@@ -37,6 +37,7 @@ configure_file("./source/Version.h.in" "${CMAKE_CURRENT_SOURCE_DIR}/source/Versi
 find_package(SDL2 CONFIG REQUIRED)
 find_package(PNG REQUIRED)
 find_package(JPEG REQUIRED)
+find_package(rapidfuzz CONFIG REQUIRED)
 if(NOT APPLE)
 	find_package(GLEW REQUIRED)
 endif()
@@ -149,6 +150,7 @@ target_link_libraries(Editor PRIVATE SDL2::SDL2main)
 
 target_include_directories(Editor PUBLIC ${LIBMAD_INCLUDE_DIR} ${NFDE_INCLUDE_DIR})
 target_link_libraries(Editor PRIVATE SDL2::SDL2 PNG::PNG JPEG::JPEG OpenAL::OpenAL imgui::imgui
+	rapidfuzz::rapidfuzz
 	$<IF:$<CONFIG:Debug>,${LIBMAD_LIB_DEBUG},${LIBMAD_LIB_RELEASE}>
 	$<IF:$<CONFIG:Debug>,${NFDE_LIB_DEBUG},${NFDE_LIB_RELEASE}>)
 

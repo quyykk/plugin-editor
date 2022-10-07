@@ -16,9 +16,11 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 #define IMGUI_DEFINE_MATH_OPERATORS
 
 #include "Set.h"
-#include "imgui.h"
-#include "imgui_internal.h"
-#include "imgui_stdlib.h"
+
+#include <imgui.h>
+#include <imgui_internal.h>
+#include <imgui_stdlib.h>
+#include <rapidfuzz/fuzz.hpp>
 
 #include <algorithm>
 #include <cstdint>
@@ -125,50 +127,41 @@ IMGUI_API bool ImGui::InputCombo(const char *label, std::string *input, T **elem
 			return true;
 		}
 
-		std::vector<const std::string *> strings;
-		strings.reserve(elements.size());
-		for(auto it = elements.begin(); it != elements.end(); ++it)
-			if(IsValid(it->second, 0) && (!sort || sort(it->first)))
-				strings.push_back(&it->first);
-
 		std::vector<std::pair<double, const char *>> weights;
-		for(auto &&second : strings)
-		{
-			const auto generatePairs = [](const std::string &str)
-			{
-				std::vector<std::pair<char, char>> pair;
-				for(int i = 0; i < static_cast<int>(str.size()); ++i)
-					pair.emplace_back(str[i], i + 1 < static_cast<int>(str.size()) ? str[i + 1] : '\0');
-				return pair;
-			};
-			std::vector<std::pair<char, char>> lhsPairs = generatePairs(*input);
-			std::vector<std::pair<char, char>> rhsPairs = generatePairs(*second);
 
-			int sameCount = 0;
-			const auto transform = [](std::pair<char, char> c)
+		// Filter the possible values using the provider filter function (if available)
+		// and perform a fuzzy search on the input to further limit the list.
+		if(!input->empty())
+		{
+			rapidfuzz::fuzz::CachedPartialRatio<char> scorer(*input);
+			const double scoreCutoff = .75;
+			for(const auto &it : elements)
 			{
-				if(std::isalpha(c.first))
-					c.first = std::tolower(c.first);
-				if(std::isalpha(c.second))
-					c.second = std::tolower(c.second);
-				return c;
-			};
-			for(int i = 0, size = std::min(lhsPairs.size(), rhsPairs.size()); i < size; ++i)
-			{
-				const auto &lhs = transform(lhsPairs[i]);
-				const auto &rhs = transform(rhsPairs[i]);
-				if(lhs == rhs)
-					++sameCount;
-				else if(i == size - 1 && lhs.second == '\0' && lhs.first == rhs.first)
-					++sameCount;
+				if(!IsValid(it.second, 0) || (sort && !sort(it.first)))
+					continue;
+
+				const double score = scorer.similarity(it.first, scoreCutoff);
+				if(score > scoreCutoff)
+					weights.emplace_back(score, it.first.c_str());
 			}
 
-			weights.emplace_back((2. * sameCount) / (lhsPairs.size() + rhsPairs.size()), second->c_str());
+			std::sort(weights.begin(), weights.end(),
+					[](const auto &lhs, const auto &rhs)
+					{
+						if(lhs.first == rhs.first)
+							return std::strcmp(lhs.second, rhs.second) < 0;
+						return lhs.first > rhs.first;
+					});
 		}
-
-		std::sort(weights.begin(), weights.end(),
-				[](const std::pair<double, const char *> &lhs, const std::pair<double, const char *> &rhs)
-					{ return lhs.first > rhs.first; });
+		else
+		{
+			// If no input is provided sort the list by alphabetical order instead.
+			for(const auto &it : elements)
+				weights.emplace_back(0., it.first.c_str());
+			std::sort(weights.begin(), weights.end(),
+					[](const auto &lhs, const auto &rhs)
+						{ return std::strcmp(lhs.second, rhs.second) < 0; });
+		}
 
 		if(!weights.empty())
 		{

@@ -9,6 +9,7 @@
 			]
 		},
 		"nativefiledialog-extended",
+		"rapidfuzz",
 		{
 			"name": "sdl2",
 			"features": ["x11", "wayland"],
