@@ -7,6 +7,7 @@ Features:
 - Supports galaxies, systems, planets, hazards, effects, fleets, governments, ships, outfits, shipyards, and outfitters.
 - A powerful map editor!
 - An outfitter to easily create ship loadouts!
+- A ship arena to easily test ships against one another.
 
 It is the successor of the old [plugin editor](https://github.com/quyykk/editor).
 
