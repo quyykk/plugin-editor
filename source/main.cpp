@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 
 		Preferences::Load();
 
-#if __linux__
+#ifdef __linux__
 		// Prefer wayland if it is available.
 		SDL_SetHint(SDL_HINT_VIDEODRIVER, "wayland,x11");
 #endif
