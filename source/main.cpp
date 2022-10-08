@@ -121,8 +121,10 @@ int main(int argc, char *argv[])
 
 		Preferences::Load();
 
+#if __linux__
 		// Prefer wayland if it is available.
 		SDL_SetHint(SDL_HINT_VIDEODRIVER, "wayland,x11");
+#endif
 
 		if(!GameWindow::Init([](SDL_Window *window, const SDL_GLContext &context)
 			{
