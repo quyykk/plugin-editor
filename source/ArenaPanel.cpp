@@ -168,11 +168,7 @@ void ArenaPanel::SetSystem(const System *system)
 		if(system)
 			player.SetSystem(*system);
 		const_cast<System *>(system)->SetDate(currentDate);
-		engine.visuals.clear();
-		engine.projectiles.clear();
-		engine.flotsam.clear();
-		engine.activeWeather.clear();
-		engine.ships.clear();
+		engine.EnterSystem(system);
 	});
 }
 
