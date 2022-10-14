@@ -425,7 +425,8 @@ void SystemEditor::RenderSystem()
 	if(object->jumpRange < 0.)
 		object->jumpRange = 0.;
 	string enterHaze = object->haze ? object->haze->Name() : "";
-	if(ImGui::InputCombo("haze", &enterHaze, &object->haze, editor.Sprites()))
+	if(ImGui::InputCombo("haze", &enterHaze, &object->haze, editor.Sprites(),
+				[](const string &name) { return !name.compare(0, 10, "_menu/haze"); }))
 	{
 		UpdateMain();
 		SetDirty();

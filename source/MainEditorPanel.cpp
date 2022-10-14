@@ -385,6 +385,8 @@ void MainEditorPanel::UpdateCache()
 		else
 			asteroids.Add(a.Name(), a.Count(), a.Energy());
 	}
+
+	GameData::SetHaze(currentSystem->Haze(), false);
 }
 
 
