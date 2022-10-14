@@ -336,6 +336,7 @@ target_sources(Editor PRIVATE
 	HazardEditor.h
 	MainEditorPanel.cpp
 	MainEditorPanel.h
+	mfunction.h
 	MapEditorPanel.cpp
 	MapEditorPanel.h
 	OutfitEditor.cpp

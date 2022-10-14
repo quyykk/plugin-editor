@@ -674,7 +674,7 @@ bool Editor::OpenPlugin(const string &plugin)
 	// Revert to the base state.
 	GameData::Assets().Revert(baseAssets);
 
-	TaskQueue::Run([this, plugin]
+	auto future = TaskQueue::Run([this, plugin]
 		{
 			// Load the plugin.
 			GameData::Assets().LoadObjects(currentPluginPath);
@@ -691,8 +691,9 @@ bool Editor::OpenPlugin(const string &plugin)
 		});
 
 	showEditor = false;
-	ui.Push(new GameLoadingPanel([this](GameLoadingPanel *This)
+	ui.Push(new GameLoadingPanel([this, future = std::move(future)](GameLoadingPanel *This)
 		{
+			future.wait();
 			ui.Pop(This);
 
 			mapEditorPanel = make_shared<MapEditorPanel>(*this, &planetEditor, &systemEditor);
@@ -728,7 +729,7 @@ bool Editor::OpenGameData(const string &game)
 	// Revert to nothing.
 	GameData::Assets().Revert({});
 
-	TaskQueue::Run([this, game]
+	auto future = TaskQueue::Run([this, game]
 		{
 			// Load the plugin.
 			GameData::Assets().LoadObjects(currentPluginPath);
@@ -745,8 +746,9 @@ bool Editor::OpenGameData(const string &game)
 		});
 
 	showEditor = false;
-	ui.Push(new GameLoadingPanel([this](GameLoadingPanel *This)
+	ui.Push(new GameLoadingPanel([this, future = std::move(future)](GameLoadingPanel *This)
 		{
+			future.wait();
 			ui.Pop(This);
 
 			mapEditorPanel = make_shared<MapEditorPanel>(*this, &planetEditor, &systemEditor);
