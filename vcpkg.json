@@ -1,53 +1,60 @@
 {
-	"dependencies": [
-		{
-			"name": "imgui",
-			"features": [
-				"opengl3-binding",
-				"sdl2-binding",
-				"docking-experimental"
-			]
-		},
-		"nativefiledialog-extended",
-		"rapidfuzz",
-		{
-			"name": "sdl2",
-			"features": ["x11", "wayland"],
-			"platform": "linux"
-		},
-		{
-			"name": "sdl2",
-			"platform": "!linux"
-		},
-		{
-			"name": "openal-soft",
-			"features": ["pipewire"],
-			"platform": "linux"
-		},
-		{
-			"name": "openal-soft",
-			"platform": "!linux"
-		},
-		"libpng",
-		"libjpeg-turbo",
-		"libmad",
-		{
-			"name": "glad",
-			"features": ["gl-api-30", "extensions"]
-		},
-		{
-			"name": "glad",
-			"features": ["wgl"],
-			"platform": "windows"
-		},
-		{
-			"name": "glad",
-			"features": ["glx", "gles2-api-30"],
-			"platform": "linux"
-		},
-		{
-			"name": "libuuid",
-			"platform": "!windows & !osx"
-		}
-	]
+  "dependencies": [
+    {
+      "name": "glad",
+      "features": [
+        "gl-api-30",
+        "extensions"
+      ]
+    },
+    {
+      "name": "glad",
+      "features": [
+        "wgl"
+      ],
+      "platform": "windows"
+    },
+    {
+      "name": "glad",
+      "features": [
+        "glx",
+        "gles2-api-30"
+      ],
+      "platform": "linux"
+    },
+    {
+      "name": "imgui",
+      "features": [
+        "opengl3-binding",
+        "sdl2-binding",
+        "docking-experimental"
+      ]
+    },
+    "libpng",
+    "libjpeg-turbo",
+    "libmad",
+    {
+      "name": "libuuid",
+      "platform": "!windows & !osx"
+    },
+    "nativefiledialog-extended",
+    "openal-soft",
+    {
+      "name": "openal-soft",
+      "features": [
+        "pipewire"
+      ],
+      "platform": "linux"
+    },
+    "rapidfuzz",
+    "sdl2",
+    {
+      "name": "sdl2",
+      "features": [
+        "x11",
+        "wayland"
+      ],
+      "platform": "linux"
+    }
+  ]
 }
