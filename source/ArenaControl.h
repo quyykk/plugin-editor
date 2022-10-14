@@ -17,6 +17,8 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 
 class ArenaPanel;
 class Editor;
+class Government;
+class Ship;
 class SystemEditor;
 
 
@@ -28,6 +30,11 @@ public:
 
 	void SetArena(std::weak_ptr<ArenaPanel> ptr);
 	void Render(bool &show);
+
+
+private:
+	void PlaceShip(const Ship &ship, const Government &gov) const;
+
 
 private:
 	Editor &editor;
