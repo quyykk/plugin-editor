@@ -56,12 +56,10 @@ bool OpenGL::InitializeLoader(SDL_Window *window)
 
 bool OpenGL::HasAdaptiveVSyncSupport()
 {
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(ES_GLES)
 	// macOS doesn't support Adaptive VSync for OpenGL.
+	// EGL doesn't support Adaptive VSync as well.
 	return false;
-#elif defined(ES_GLES)
-	// EGL always support Adapative VSync.
-	return true;
 #elif defined(_WIN32)
 	return GLAD_WGL_EXT_swap_control_tear;
 #else
