@@ -92,7 +92,7 @@ protected:
 
 private:
 	size_t zoomIndex = 4;
-	int64_t date = 0;
+	int64_t date = 100000;
 	bool paused = false;
 
 	Point click;
