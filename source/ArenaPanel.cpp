@@ -22,6 +22,7 @@
 #include "PlayerInfo.h"
 #include "PlayerInfoPanel.h"
 #include "Preferences.h"
+#include "Projectile.h"
 #include "Random.h"
 #include "Screen.h"
 #include "Ship.h"
@@ -29,6 +30,8 @@
 #include "StellarObject.h"
 #include "System.h"
 #include "UI.h"
+#include "Visual.h"
+#include "Weather.h"
 
 #include "opengl.h"
 
@@ -161,9 +164,16 @@ void ArenaPanel::Draw()
 
 void ArenaPanel::SetSystem(const System *system)
 {
-	if(system)
-		player.SetSystem(*system);
-	const_cast<System *>(system)->SetDate(currentDate);
+	Execute([this, system] {
+		if(system)
+			player.SetSystem(*system);
+		const_cast<System *>(system)->SetDate(currentDate);
+		engine.visuals.clear();
+		engine.projectiles.clear();
+		engine.flotsam.clear();
+		engine.activeWeather.clear();
+		engine.ships.clear();
+	});
 }
 
 
