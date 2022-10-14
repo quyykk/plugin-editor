@@ -147,7 +147,8 @@ IMGUI_API bool ImGui::InputCombo(const char *label, std::string *input, T **elem
 		{
 			// If no input is provided sort the list by alphabetical order instead.
 			for(const auto &it : elements)
-				weights.emplace_back(0., it.first.c_str());
+				if(IsValid(it.second, 0) && (!sort || sort(it.first)))
+					weights.emplace_back(0., it.first.c_str());
 			std::sort(weights.begin(), weights.end(),
 					[](const auto &lhs, const auto &rhs)
 						{ return std::strcmp(lhs.second, rhs.second) < 0; });
