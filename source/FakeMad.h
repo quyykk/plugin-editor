@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: GPL-3.0
+
 // A header-only no-op implementation of enough of libmad to use in Music.cpp
 // without actually doing anything.
 // Ordinarily provided by <mad.h>
