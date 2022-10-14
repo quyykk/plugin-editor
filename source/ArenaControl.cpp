@@ -56,6 +56,9 @@ void ArenaControl::Render(bool &show)
 	if(!arenaPtr)
 		return ImGui::End();
 
+	if(ImGui::Button(arenaPtr->paused ? "Unpause" : "Pause"))
+		arenaPtr->paused = !arenaPtr->paused;
+	ImGui::SameLine();
 	if(ImGui::Button("Clear Ships"))
 		arenaPtr->Execute([arenaPtr]
 			{
