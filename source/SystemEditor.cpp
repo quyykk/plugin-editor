@@ -226,9 +226,9 @@ void SystemEditor::Render()
 		return;
 	}
 
-	if(ImGui::IsWindowFocused() && ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_S))
+	if(ImGui::IsWindowFocused() && ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_R))
 		RandomizeAll();
-	if(ImGui::IsWindowFocused() && ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_S))
+	if(ImGui::IsWindowFocused() && ImGui::GetIO().KeyCtrl && ImGui::IsKeyPressed(ImGuiKey_T))
 		GenerateTrades();
 
 	bool showNewSystem = false;
