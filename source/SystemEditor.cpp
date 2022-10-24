@@ -1451,6 +1451,7 @@ void SystemEditor::StandardizeSystem()
 	// Calculate the habitable value.
 	auto *star1 = object->objects.front().sprite;
 
+	bool binaryStar = false;
 	if(object->objects.size() == 1 || !object->objects[1].isStar)
 		object->habitable = starHabitableValues[star1->Name()];
 	else
@@ -1458,12 +1459,13 @@ void SystemEditor::StandardizeSystem()
 		auto habitable1 = starHabitableValues[star1->Name()];
 		auto habitable2 = starHabitableValues[object->objects[1].sprite->Name()];
 		object->habitable = sqrt(habitable1 * habitable1 + habitable2 * habitable2);
+		binaryStar = true;
 	}
 
 	const auto stellarMass = object->habitable * STELLAR_MASS_SCALE;
 
 	// Now calculate the periods of every star.
-	for(size_t i = 2; i < object->objects.size(); ++i)
+	for(size_t i = 1 + binaryStar; i < object->objects.size(); ++i)
 	{
 		auto &stellar = object->objects[i];
 		if(stellar.parent == -1)
