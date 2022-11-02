@@ -4,7 +4,7 @@ runs:
   using: 'composite'
   steps:
     - if: runner.os == 'Linux'
-      run: sudo apt install -y --no-install-recommends libfuse2 libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev libgles2-mesa-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev ccache libdbus-1-dev
+      run: sudo apt install -y --no-install-recommends libxmu-dev libxi-dev libgl-dev libglu1-mesa-dev libgles2-mesa-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev ccache libdbus-1-dev
       shell: bash
 
     - if: runner.os == 'Windows'
