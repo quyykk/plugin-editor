@@ -45,7 +45,7 @@ jobs:
           configurePreset: 'linux-ci'
           buildPreset: 'linux-ci'
       - name: Package Application
-        run: ./utils/build_appimage.sh
+        run: ./utils/build_appimage.sh build/ci
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
