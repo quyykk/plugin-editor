@@ -1048,7 +1048,23 @@ void SystemEditor::WriteObject(DataWriter &writer, const System *system, const S
 
 	writer.BeginChild();
 	if(object->GetSprite())
+	{
 		writer.Write("sprite", object->GetSprite()->Name());
+		writer.BeginChild();
+		if(object->scale != 1.f)
+			writer.Write("scale", object->scale);
+		if(object->frameRate != 2.f / 60.f)
+			writer.Write("frame rate", object->frameRate * 60.f);
+		if(object->delay)
+			writer.Write("delay", object->delay);
+		if(object->randomize)
+			writer.Write("random start frame");
+		if(!object->repeat)
+			writer.Write("no repeat");
+		if(object->rewind)
+			writer.Write("rewind");
+		writer.EndChild();
+	}
 	if(object->distance)
 		writer.Write("distance", object->Distance());
 	if(object->speed)

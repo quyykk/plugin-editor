@@ -98,6 +98,9 @@ bool TemplateEditor<T>::RenderElement(Body *sprite, const std::string &name)
 		if(ImGui::InputCombo("sprite", &spriteName, &sprite->sprite, editor.Sprites()))
 			SetDirty();
 
+		if(ImGui::InputFloatEx("scale", &sprite->scale))
+			SetDirty();
+
 		double value = sprite->frameRate * 60.;
 		if(ImGui::InputDoubleEx("frame rate", &value))
 		{

@@ -171,6 +171,8 @@ void EffectEditor::WriteToFile(DataWriter &writer, const Effect *effect) const
 		{
 			writer.Write("sprite", effect->GetSprite()->Name());
 			writer.BeginChild();
+			if(effect->scale != 1.f)
+				writer.Write("scale", effect->scale);
 			if(effect->frameRate != 2.f / 60.f)
 				writer.Write("frame rate", effect->frameRate * 60.f);
 			if(effect->delay)
