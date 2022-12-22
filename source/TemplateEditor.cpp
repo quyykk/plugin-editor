@@ -26,6 +26,7 @@
 #include <type_traits>
 #include <vector>
 
+using namespace std;
 
 
 template <typename T>
@@ -78,7 +79,7 @@ void TemplateEditor<T>::RenderSprites(const std::string &name, std::vector<std::
 
 
 template <typename T>
-bool TemplateEditor<T>::RenderElement(Body *sprite, const std::string &name)
+bool TemplateEditor<T>::RenderElement(Body *sprite, const std::string &name, const function<bool(const string &)> &spriteFilter)
 {
 	static std::string spriteName;
 	spriteName.clear();
@@ -95,7 +96,7 @@ bool TemplateEditor<T>::RenderElement(Body *sprite, const std::string &name)
 	{
 		if(sprite->GetSprite())
 			spriteName = sprite->GetSprite()->Name();
-		if(ImGui::InputCombo("sprite", &spriteName, &sprite->sprite, editor.Sprites()))
+		if(ImGui::InputCombo("sprite", &spriteName, &sprite->sprite, editor.Sprites(), spriteFilter))
 			SetDirty();
 
 		if(ImGui::InputFloatEx("scale", &sprite->scale))

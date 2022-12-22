@@ -18,6 +18,7 @@
 #include "imgui_ex.h"
 #include "imgui_stdlib.h"
 
+#include <functional>
 #include <iomanip>
 #include <list>
 #include <map>
@@ -72,7 +73,7 @@ protected:
 	void SetDirty(const T *obj);
 
 	void RenderSprites(const std::string &name, std::vector<std::pair<Body, int>> &map);
-	bool RenderElement(Body *sprite, const std::string &name);
+	bool RenderElement(Body *sprite, const std::string &name, const std::function<bool(const std::string &)> &spriteFilter = {});
 	void RenderSound(const std::string &name, std::map<const Sound *, int> &map);
 	void RenderEffect(const std::string &name, std::map<const Effect *, int> &map);
 

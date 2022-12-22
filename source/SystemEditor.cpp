@@ -912,19 +912,10 @@ void SystemEditor::RenderObject(StellarObject &object, int index, int &nested, b
 			}
 			SetDirty();
 		}
-		Sprite *sprite = nullptr;
-		string spriteName;
-		if(object.sprite)
-			spriteName = object.sprite->Name();
-		if(ImGui::InputCombo("sprite", &spriteName, &sprite, editor.Sprites(),
-					[](const string &name) { return !name.compare(0, 7, "planet/")
-					    || !name.compare(0, 5, "star/"); }))
-		{
-			object.sprite = sprite;
-			object.isStation = (spriteName.find("station") != string::npos);
-			SetDirty();
-		}
 
+		RenderElement(&object, "sprite", [](const string &name) {
+				return !name.compare(0, 7, "planet/") || !name.compare(0, 5, "star/");
+			});
 		if(ImGui::InputDoubleEx("distance", &object.distance))
 			SetDirty();
 		double period = 0.;
