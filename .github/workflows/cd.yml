@@ -38,9 +38,7 @@ jobs:
       - name: Install development dependencies
         uses: ./.github/dependencies
       - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10
-        with:
-          vcpkgJsonGlob: 'vcpkg.json'
+      - uses: lukka/run-vcpkg@v11
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'linux-ci'
@@ -75,13 +73,8 @@ jobs:
             ${{ runner.os }}-ccache
       - name: Install development dependencies
         uses: ./.github/dependencies
-      - name: Get MinGW
-        uses: quyykk/get-winlibs-mingw@v1
       - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10
-        with:
-          vcpkgJsonGlob: 'vcpkg.json'
-          appendedCacheKey: ${{ env.CACHE_ID }}
+      - uses: lukka/run-vcpkg@v11
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'mingw-ci'
@@ -119,9 +112,7 @@ jobs:
       - name: Install development dependencies
         uses: ./.github/dependencies
       - uses: lukka/get-cmake@latest
-      - uses: lukka/run-vcpkg@v10
-        with:
-          vcpkgJsonGlob: 'vcpkg.json'
+      - uses: lukka/run-vcpkg@v11
       - uses: lukka/run-cmake@v10
         with:
           configurePreset: 'macos-ci'
