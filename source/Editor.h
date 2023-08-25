@@ -19,7 +19,7 @@
 #include "ShipyardEditor.h"
 #include "SystemEditor.h"
 
-#include "Plugin.h"
+#include "EditorPlugin.h"
 #include "UniverseObjects.h"
 
 #include <cstdint>
@@ -72,7 +72,7 @@ public:
 	const Set<Sprite> &Sprites() const;
 	const Set<Sound> &Sounds() const;
 	const SpriteSet &Spriteset() const;
-	Plugin &GetPlugin();
+	EditorPlugin &GetPlugin();
 
 	const std::shared_ptr<MapEditorPanel> &MapPanel() const;
 	const std::shared_ptr<MainEditorPanel> &SystemViewPanel() const;
@@ -121,7 +121,7 @@ private:
 	std::shared_ptr<ArenaPanel> arenaPanel;
 	ArenaControl arenaControl;
 
-	Plugin plugin;
+	EditorPlugin plugin;
 	std::string currentPluginPath;
 	bool isGameData = false;
 

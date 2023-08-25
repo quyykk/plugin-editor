@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
-#include "Plugin.h"
+#include "EditorPlugin.h"
 
 #include "DataFile.h"
 #include "DataWriter.h"
@@ -44,7 +44,7 @@ auto &GetEditorForNodeElement(const Editor &editor)
 }
 
 
-void Plugin::Load(const Editor &editor, string_view path)
+void EditorPlugin::Load(const Editor &editor, string_view path)
 {
 	data.clear();
 	unknownNodes.clear();
@@ -96,7 +96,7 @@ void Plugin::Load(const Editor &editor, string_view path)
 
 
 
-void Plugin::Save(const Editor &editor, string_view path)
+void EditorPlugin::Save(const Editor &editor, string_view path)
 {
 	for(const auto &[file, objects] : data)
 	{
@@ -127,14 +127,14 @@ void Plugin::Save(const Editor &editor, string_view path)
 
 
 
-bool Plugin::HasChanges() const
+bool EditorPlugin::HasChanges() const
 {
 	return hasModifications;
 }
 
 
 
-void Plugin::Add(Node node)
+void EditorPlugin::Add(Node node)
 {
 	hasModifications = true;
 
@@ -177,7 +177,7 @@ void Plugin::Add(Node node)
 
 
 
-bool Plugin::Has(const Node &node) const
+bool EditorPlugin::Has(const Node &node) const
 {
 	return std::visit([this](const auto *ptr)
 		{
@@ -187,7 +187,7 @@ bool Plugin::Has(const Node &node) const
 
 
 
-void Plugin::Remove(const Node &node)
+void EditorPlugin::Remove(const Node &node)
 {
 	hasModifications = true;
 	std::visit([this](const auto *ptr)

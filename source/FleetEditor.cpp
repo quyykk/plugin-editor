@@ -44,7 +44,7 @@ namespace
 		{ Personality::TIMID, "timid" },
 		{ Personality::DISABLES, "disables" },
 		{ Personality::PLUNDERS, "plunders" },
-		{ Personality::HEROIC, "heroic" },
+		{ Personality::HUNTING, "hunting" },
 		{ Personality::STAYING, "staying" },
 		{ Personality::ENTERING, "entering" },
 		{ Personality::NEMESIS, "nemesis" },
@@ -64,9 +64,15 @@ namespace
 		{ Personality::APPEASING, "appeasing" },
 		{ Personality::MUTE, "mute" },
 		{ Personality::OPPORTUNISTIC, "opportunistic" },
+		{ Personality::MERCIFUL, "merciful" },
 		{ Personality::TARGET, "target" },
 		{ Personality::MARKED, "marked" },
 		{ Personality::LAUNCHING, "launching" },
+		{ Personality::LINGERING, "lingering" },
+		{ Personality::DARING, "daring" },
+		{ Personality::SECRETIVE, "secretive" },
+		{ Personality::RAMMING, "ramming" },
+		{ Personality::DECLOAKED, "decloaked" }
 	};
 }
 
@@ -192,20 +198,20 @@ void FleetEditor::RenderFleet()
 		SetDirty();
 	}
 
-	if(ImGui::InputInt("cargo", &object->cargo))
+	if(ImGui::InputInt("cargo", &object->cargo.cargo))
 		SetDirty();
 	if(ImGui::TreeNode("commodities"))
 	{
 		for(const auto &commodity : editor.Universe().trade.Commodities())
 		{
-			auto it = find(object->commodities.begin(), object->commodities.end(), commodity.name);
-			bool has = it != object->commodities.end();
+			auto it = find(object->cargo.commodities.begin(), object->cargo.commodities.end(), commodity.name);
+			bool has = it != object->cargo.commodities.end();
 			if(ImGui::Checkbox(commodity.name.c_str(), &has))
 			{
 				if(!has)
-					object->commodities.erase(it);
+					object->cargo.commodities.erase(it);
 				else
-					object->commodities.push_back(commodity.name);
+					object->cargo.commodities.push_back(commodity.name);
 				SetDirty();
 			}
 		}
@@ -216,7 +222,7 @@ void FleetEditor::RenderFleet()
 		int index = 0;
 		const Sale<Outfit> *toAdd = nullptr;
 		const Sale<Outfit> *toRemove = nullptr;
-		for(auto it = object->outfitters.begin(); it != object->outfitters.end(); ++it)
+		for(auto it = object->cargo.outfitters.begin(); it != object->cargo.outfitters.end(); ++it)
 		{
 			ImGui::PushID(index++);
 			static Sale<Outfit> *selected;
@@ -231,16 +237,16 @@ void FleetEditor::RenderFleet()
 			ImGui::PopID();
 		}
 		if(toAdd)
-			object->outfitters.insert(toAdd);
+			object->cargo.outfitters.insert(toAdd);
 		if(toRemove)
-			object->outfitters.erase(toRemove);
+			object->cargo.outfitters.erase(toRemove);
 		static Sale<Outfit> *selected;
 		string name;
 		ImGui::Spacing();
 		if(ImGui::InputCombo("add outfitter", &name, &selected, editor.Universe().outfitSales))
 			if(selected)
 			{
-				object->outfitters.insert(selected);
+				object->cargo.outfitters.insert(selected);
 				SetDirty();
 			}
 		ImGui::TreePop();
@@ -249,256 +255,310 @@ void FleetEditor::RenderFleet()
 	{
 		if(ImGui::InputDoubleEx("confusion", &object->personality.confusionMultiplier))
 			SetDirty();
-		bool flag = object->personality.flags & Personality::PACIFIST;
+		bool flag = object->personality.flags.test(Personality::PACIFIST);
 		if(ImGui::Checkbox("pacifist", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::PACIFIST;
+				object->personality.flags.set(Personality::PACIFIST);
 			else
-				object->personality.flags &= ~Personality::PACIFIST;
+				object->personality.flags.reset(Personality::PACIFIST);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::FORBEARING;
+		flag = object->personality.flags.test(Personality::FORBEARING);
 		if(ImGui::Checkbox("forbearing", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::FORBEARING;
+				object->personality.flags.set(Personality::FORBEARING);
 			else
-				object->personality.flags &= ~Personality::FORBEARING;
+				object->personality.flags.reset(Personality::FORBEARING);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::TIMID;
+		flag = object->personality.flags.test(Personality::TIMID);
 		if(ImGui::Checkbox("timid", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::TIMID;
+				object->personality.flags.set(Personality::TIMID);
 			else
-				object->personality.flags &= ~Personality::TIMID;
+				object->personality.flags.reset(Personality::TIMID);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::DISABLES;
+		flag = object->personality.flags.test(Personality::DISABLES);
 		if(ImGui::Checkbox("disables", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::DISABLES;
+				object->personality.flags.set(Personality::DISABLES);
 			else
-				object->personality.flags &= ~Personality::DISABLES;
+				object->personality.flags.reset(Personality::DISABLES);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::PLUNDERS;
+		flag = object->personality.flags.test(Personality::PLUNDERS);
 		if(ImGui::Checkbox("plunders", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::PLUNDERS;
+				object->personality.flags.set(Personality::PLUNDERS);
 			else
-				object->personality.flags &= ~Personality::PLUNDERS;
+				object->personality.flags.reset(Personality::PLUNDERS);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::HEROIC;
-		if(ImGui::Checkbox("heroic", &flag))
+		flag = object->personality.flags.test(Personality::HUNTING);
+		if(ImGui::Checkbox("hunting", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::HEROIC;
+				object->personality.flags.set(Personality::HUNTING);
 			else
-				object->personality.flags &= ~Personality::HEROIC;
+				object->personality.flags.reset(Personality::HUNTING);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::STAYING;
+		flag = object->personality.flags.test(Personality::STAYING);
 		if(ImGui::Checkbox("staying", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::STAYING;
+				object->personality.flags.set(Personality::STAYING);
 			else
-				object->personality.flags &= ~Personality::STAYING;
+				object->personality.flags.reset(Personality::STAYING);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::ENTERING;
+		flag = object->personality.flags.test(Personality::ENTERING);
 		if(ImGui::Checkbox("entering", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::ENTERING;
+				object->personality.flags.set(Personality::ENTERING);
 			else
-				object->personality.flags &= ~Personality::ENTERING;
+				object->personality.flags.reset(Personality::ENTERING);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::NEMESIS;
+		flag = object->personality.flags.test(Personality::NEMESIS);
 		if(ImGui::Checkbox("nemesis", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::NEMESIS;
+				object->personality.flags.set(Personality::NEMESIS);
 			else
-				object->personality.flags &= ~Personality::NEMESIS;
+				object->personality.flags.reset(Personality::NEMESIS);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::SURVEILLANCE;
+		flag = object->personality.flags.test(Personality::SURVEILLANCE);
 		if(ImGui::Checkbox("surveillance", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::SURVEILLANCE;
+				object->personality.flags.set(Personality::SURVEILLANCE);
 			else
-				object->personality.flags &= ~Personality::SURVEILLANCE;
+				object->personality.flags.reset(Personality::SURVEILLANCE);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::UNINTERESTED;
+		flag = object->personality.flags.test(Personality::UNINTERESTED);
 		if(ImGui::Checkbox("uninterested", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::UNINTERESTED;
+				object->personality.flags.set(Personality::UNINTERESTED);
 			else
-				object->personality.flags &= ~Personality::UNINTERESTED;
+				object->personality.flags.reset(Personality::UNINTERESTED);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::WAITING;
+		flag = object->personality.flags.test(Personality::WAITING);
 		if(ImGui::Checkbox("waiting", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::WAITING;
+				object->personality.flags.set(Personality::WAITING);
 			else
-				object->personality.flags &= ~Personality::WAITING;
+				object->personality.flags.reset(Personality::WAITING);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::DERELICT;
+		flag = object->personality.flags.test(Personality::DERELICT);
 		if(ImGui::Checkbox("derelict", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::DERELICT;
+				object->personality.flags.set(Personality::DERELICT);
 			else
-				object->personality.flags &= ~Personality::DERELICT;
+				object->personality.flags.reset(Personality::DERELICT);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::FLEEING;
+		flag = object->personality.flags.test(Personality::FLEEING);
 		if(ImGui::Checkbox("fleeing", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::FLEEING;
+				object->personality.flags.set(Personality::FLEEING);
 			else
-				object->personality.flags &= ~Personality::FLEEING;
+				object->personality.flags.reset(Personality::FLEEING);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::ESCORT;
+		flag = object->personality.flags.test(Personality::ESCORT);
 		if(ImGui::Checkbox("escort", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::ESCORT;
+				object->personality.flags.set(Personality::ESCORT);
 			else
-				object->personality.flags &= ~Personality::ESCORT;
+				object->personality.flags.reset(Personality::ESCORT);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::FRUGAL;
+		flag = object->personality.flags.test(Personality::FRUGAL);
 		if(ImGui::Checkbox("frugal", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::FRUGAL;
+				object->personality.flags.set(Personality::FRUGAL);
 			else
-				object->personality.flags &= ~Personality::FRUGAL;
+				object->personality.flags.reset(Personality::FRUGAL);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::COWARD;
+		flag = object->personality.flags.test(Personality::COWARD);
 		if(ImGui::Checkbox("coward", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::COWARD;
+				object->personality.flags.set(Personality::COWARD);
 			else
-				object->personality.flags &= ~Personality::COWARD;
+				object->personality.flags.reset(Personality::COWARD);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::VINDICTIVE;
+		flag = object->personality.flags.test(Personality::VINDICTIVE);
 		if(ImGui::Checkbox("vindictive", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::VINDICTIVE;
+				object->personality.flags.set(Personality::VINDICTIVE);
 			else
-				object->personality.flags &= ~Personality::VINDICTIVE;
+				object->personality.flags.reset(Personality::VINDICTIVE);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::SWARMING;
+		flag = object->personality.flags.test(Personality::SWARMING);
 		if(ImGui::Checkbox("swarming", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::SWARMING;
+				object->personality.flags.set(Personality::SWARMING);
 			else
-				object->personality.flags &= ~Personality::SWARMING;
+				object->personality.flags.reset(Personality::SWARMING);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::UNCONSTRAINED;
+		flag = object->personality.flags.test(Personality::UNCONSTRAINED);
 		if(ImGui::Checkbox("unconstrained", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::UNCONSTRAINED;
+				object->personality.flags.set(Personality::UNCONSTRAINED);
 			else
-				object->personality.flags &= ~Personality::UNCONSTRAINED;
+				object->personality.flags.reset(Personality::UNCONSTRAINED);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::MINING;
+		flag = object->personality.flags.test(Personality::MINING);
 		if(ImGui::Checkbox("mining", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::MINING;
+				object->personality.flags.set(Personality::MINING);
 			else
-				object->personality.flags &= ~Personality::MINING;
+				object->personality.flags.reset(Personality::MINING);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::HARVESTS;
+		flag = object->personality.flags.test(Personality::HARVESTS);
 		if(ImGui::Checkbox("harvests", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::HARVESTS;
+				object->personality.flags.set(Personality::HARVESTS);
 			else
-				object->personality.flags &= ~Personality::HARVESTS;
+				object->personality.flags.reset(Personality::HARVESTS);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::APPEASING;
+		flag = object->personality.flags.test(Personality::APPEASING);
 		if(ImGui::Checkbox("appeasing", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::APPEASING;
+				object->personality.flags.set(Personality::APPEASING);
 			else
-				object->personality.flags &= ~Personality::APPEASING;
+				object->personality.flags.reset(Personality::APPEASING);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::MUTE;
+		flag = object->personality.flags.test(Personality::MUTE);
 		if(ImGui::Checkbox("mute", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::MUTE;
+				object->personality.flags.set(Personality::MUTE);
 			else
-				object->personality.flags &= ~Personality::MUTE;
+				object->personality.flags.reset(Personality::MUTE);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::OPPORTUNISTIC;
+		flag = object->personality.flags.test(Personality::OPPORTUNISTIC);
 		if(ImGui::Checkbox("opportunistic", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::OPPORTUNISTIC;
+				object->personality.flags.set(Personality::OPPORTUNISTIC);
 			else
-				object->personality.flags &= ~Personality::OPPORTUNISTIC;
+				object->personality.flags.reset(Personality::OPPORTUNISTIC);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::TARGET;
+		flag = object->personality.flags.test(Personality::MERCIFUL);
+		if(ImGui::Checkbox("merciful", &flag))
+		{
+			if(flag)
+				object->personality.flags.set(Personality::MERCIFUL);
+			else
+				object->personality.flags.reset(Personality::MERCIFUL);
+			SetDirty();
+		}
+		flag = object->personality.flags.test(Personality::TARGET);
 		if(ImGui::Checkbox("target", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::TARGET;
+				object->personality.flags.set(Personality::TARGET);
 			else
-				object->personality.flags &= ~Personality::TARGET;
+				object->personality.flags.reset(Personality::TARGET);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::MARKED;
+		flag = object->personality.flags.test(Personality::MARKED);
 		if(ImGui::Checkbox("marked", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::MARKED;
+				object->personality.flags.set(Personality::MARKED);
 			else
-				object->personality.flags &= ~Personality::MARKED;
+				object->personality.flags.reset(Personality::MARKED);
 			SetDirty();
 		}
-		flag = object->personality.flags & Personality::LAUNCHING;
+		flag = object->personality.flags.test(Personality::LAUNCHING);
 		if(ImGui::Checkbox("launching", &flag))
 		{
 			if(flag)
-				object->personality.flags |= Personality::LAUNCHING;
+				object->personality.flags.set(Personality::LAUNCHING);
 			else
-				object->personality.flags &= ~Personality::LAUNCHING;
+				object->personality.flags.reset(Personality::LAUNCHING);
+			SetDirty();
+		}
+		flag = object->personality.flags.test(Personality::LINGERING);
+		if(ImGui::Checkbox("lingering", &flag))
+		{
+			if(flag)
+				object->personality.flags.set(Personality::LINGERING);
+			else
+				object->personality.flags.reset(Personality::LINGERING);
+			SetDirty();
+		}
+		flag = object->personality.flags.test(Personality::DARING);
+		if(ImGui::Checkbox("daring", &flag))
+		{
+			if(flag)
+				object->personality.flags.set(Personality::DARING);
+			else
+				object->personality.flags.reset(Personality::DARING);
+			SetDirty();
+		}
+		flag = object->personality.flags.test(Personality::SECRETIVE);
+		if(ImGui::Checkbox("secretive", &flag))
+		{
+			if(flag)
+				object->personality.flags.set(Personality::SECRETIVE);
+			else
+				object->personality.flags.reset(Personality::SECRETIVE);
+			SetDirty();
+		}
+		flag = object->personality.flags.test(Personality::RAMMING);
+		if(ImGui::Checkbox("ramming", &flag))
+		{
+			if(flag)
+				object->personality.flags.set(Personality::RAMMING);
+			else
+				object->personality.flags.reset(Personality::RAMMING);
+			SetDirty();
+		}
+		flag = object->personality.flags.test(Personality::DECLOAKED);
+		if(ImGui::Checkbox("decloaked", &flag))
+		{
+			if(flag)
+				object->personality.flags.set(Personality::DECLOAKED);
+			else
+				object->personality.flags.reset(Personality::DECLOAKED);
 			SetDirty();
 		}
 		ImGui::TreePop();
@@ -510,7 +570,7 @@ void FleetEditor::RenderFleet()
 		if(ImGui::Selectable("Add Variant"))
 		{
 			Variant var;
-			object->variants.emplace_back(1, move(var));
+			object->variants.emplace_back(1, std::move(var));
 			SetDirty();
 		}
 		ImGui::EndPopup();
@@ -631,30 +691,30 @@ void FleetEditor::WriteToFile(DataWriter &writer, const Fleet *fleet) const
 	if(!diff || fleet->fighterNames != diff->fighterNames)
 		if(fleet->fighterNames)
 			writer.Write("fighters", fleet->fighterNames->Name());
-	if(!diff || fleet->cargo != diff->cargo)
-		if(fleet->cargo != 3 || diff)
-			writer.Write("cargo", fleet->cargo);
-	if(!diff || fleet->commodities != fleet->commodities)
-		if(!fleet->commodities.empty())
+	if(!diff || fleet->cargo.cargo != diff->cargo.cargo)
+		if(fleet->cargo.cargo != 3 || diff)
+			writer.Write("cargo", fleet->cargo.cargo);
+	if(!diff || fleet->cargo.commodities != fleet->cargo.commodities)
+		if(!fleet->cargo.commodities.empty())
 		{
 			writer.WriteToken("commodities");
-			for(const auto &commodity : fleet->commodities)
+			for(const auto &commodity : fleet->cargo.commodities)
 				writer.WriteToken(commodity);
 			writer.Write();
 		}
-	if(!diff || fleet->outfitters != diff->outfitters)
-		if(!fleet->outfitters.empty())
+	if(!diff || fleet->cargo.outfitters != diff->cargo.outfitters)
+		if(!fleet->cargo.outfitters.empty())
 		{
 			writer.WriteToken("outfitters");
-			for(const auto &outfitter : fleet->outfitters)
+			for(const auto &outfitter : fleet->cargo.outfitters)
 				writer.WriteToken(outfitter->name);
 			writer.Write();
 		}
 	if(!diff || fleet->personality.confusionMultiplier != diff->personality.confusionMultiplier
 			|| fleet->personality.flags != diff->personality.flags)
-		if(fleet->personality.confusionMultiplier || fleet->personality.flags || diff)
+		if(fleet->personality.confusionMultiplier || fleet->personality.flags.any() || diff)
 		{
-			bool clearPersonality = diff && ((fleet->personality.flags ^ diff->personality.flags) & fleet->personality.flags);
+			bool clearPersonality = diff && ((fleet->personality.flags ^ diff->personality.flags) & fleet->personality.flags).any();
 			if(clearPersonality)
 				writer.Write("remove", "personality");
 			else
@@ -664,10 +724,10 @@ void FleetEditor::WriteToFile(DataWriter &writer, const Fleet *fleet) const
 					|| (diff && fleet->personality.confusionMultiplier != diff->personality.confusionMultiplier))
 				writer.Write("confusion", fleet->personality.confusionMultiplier);
 
-			auto writeAll = [&writer](int flags, const char *opt = nullptr)
+			auto writeAll = [&writer](auto flags, const char *opt = nullptr)
 			{
-				for(int i = 1; i <= (1 << 27); i <<= 1)
-					if(auto personality = PersonalityToString[flags & i])
+				for(auto i = 1ull; i <= (1ull << 34); i <<= 1)
+					if(auto personality = PersonalityToString[flags.test(i)])
 					{
 						if(opt)
 							writer.WriteToken(opt);
@@ -676,24 +736,24 @@ void FleetEditor::WriteToFile(DataWriter &writer, const Fleet *fleet) const
 				writer.Write();
 			};
 
-			if(!diff && fleet->personality.flags)
+			if(!diff && fleet->personality.flags.any())
 				writeAll(fleet->personality.flags);
 			else if(diff)
 			{
-				int toAdd = (fleet->personality.flags ^ diff->personality.flags) & fleet->personality.flags;
-				int toRemove = (fleet->personality.flags ^ diff->personality.flags) & diff->personality.flags;
-				if(toRemove == diff->personality.flags && !toRemove)
+				auto toAdd = (fleet->personality.flags ^ diff->personality.flags) & fleet->personality.flags;
+				auto toRemove = (fleet->personality.flags ^ diff->personality.flags) & diff->personality.flags;
+				if(toRemove == diff->personality.flags && toRemove.none())
 				{
-					if(!toAdd)
+					if(toAdd.none())
 						writer.Write("remove", "personality");
 					else
 						writeAll(toAdd);
 				}
 				else
 				{
-					if(toAdd)
+					if(toAdd.any())
 						writeAll(toAdd, "add");
-					if(toRemove)
+					if(toRemove.any())
 						writeAll(toRemove, "remove");
 				}
 			}

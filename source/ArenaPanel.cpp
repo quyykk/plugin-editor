@@ -232,7 +232,7 @@ bool ArenaPanel::Click(int x, int y, int clicks)
 	SDL_Keymod mod = SDL_GetModState();
 	hasShift = (mod & KMOD_SHIFT);
 
-	engine.Click(dragSource, dragSource, hasShift);
+	engine.Click(dragSource, dragSource, hasShift, false);
 
 	return true;
 }
@@ -267,7 +267,7 @@ bool ArenaPanel::Release(int x, int y)
 	{
 		dragPoint = Point(x, y);
 		if(dragPoint.Distance(dragSource) > 5.)
-			engine.Click(dragSource, dragPoint, hasShift);
+			engine.Click(dragSource, dragPoint, hasShift, false);
 
 		isDragging = false;
 	}

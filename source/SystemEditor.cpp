@@ -452,7 +452,7 @@ void SystemEditor::RenderSystem()
 			if(ImGui::InputText("##attribute", &str, ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				if(!str.empty())
-					toAdd.insert(move(str));
+					toAdd.insert(std::move(str));
 				toRemove.insert(attribute);
 			}
 			ImGui::PopID();
@@ -469,12 +469,12 @@ void SystemEditor::RenderSystem()
 		static string addAttribute;
 		if(ImGui::InputText("add attribute", &addAttribute, ImGuiInputTextFlags_EnterReturnsTrue))
 		{
-			object->attributes.insert(move(addAttribute));
+			object->attributes.insert(std::move(addAttribute));
 			SetDirty();
 		}
 		if(!addAttribute.empty() && !ImGui::IsInputFocused("add attribute"))
 		{
-			object->attributes.insert(move(addAttribute));
+			object->attributes.insert(std::move(addAttribute));
 			SetDirty();
 		}
 		ImGui::TreePop();
@@ -560,7 +560,7 @@ void SystemEditor::RenderSystem()
 			ImGui::PushID(index);
 			if(asteroid.Type())
 			{
-				bool open = ImGui::TreeNode("minables", "mineable: %s %d %g", asteroid.Type()->Name().c_str(), asteroid.count, asteroid.energy);
+				bool open = ImGui::TreeNode("minables", "mineable: %s %d %g", asteroid.Type()->TrueName().c_str(), asteroid.count, asteroid.energy);
 				if(ImGui::BeginPopupContextItem())
 				{
 					if(ImGui::Selectable("Remove"))
@@ -570,9 +570,8 @@ void SystemEditor::RenderSystem()
 
 				if(open)
 				{
-					if(ImGui::BeginCombo("name", asteroid.Type()->Name().c_str()))
+					if(ImGui::BeginCombo("name", asteroid.Type()->TrueName().c_str()))
 					{
-						int index = 0;
 						for(const auto &item : editor.Universe().minables)
 						{
 							const bool selected = &item.second == asteroid.Type();

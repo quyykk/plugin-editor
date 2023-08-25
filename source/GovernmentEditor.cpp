@@ -142,12 +142,12 @@ void GovernmentEditor::RenderGovernment()
 	if(ImGui::InputSwizzle("swizzle", &object->swizzle))
 		SetDirty();
 	float color[3] = {};
-	color[0] = object->color.Get()[0];
-	color[1] = object->color.Get()[1];
-	color[2] = object->color.Get()[2];
+	color[0] = object->color->Get()[0];
+	color[1] = object->color->Get()[1];
+	color[2] = object->color->Get()[2];
 	if(ImGui::ColorEdit3("color", color))
 	{
-		object->color = Color(color[0], color[1], color[2]);
+		object->color = ExclusiveItem(Color(color[0], color[1], color[2]));
 		SetDirty();
 	}
 	if(ImGui::InputDoubleEx("player reputation", &object->initialPlayerReputation))
@@ -273,9 +273,65 @@ void GovernmentEditor::RenderGovernment()
 
 	if(ImGui::InputText("language", &object->language))
 		SetDirty();
-	string raidName = object->raidFleet ? object->raidFleet->Name() : "";
-	if(ImGui::InputCombo("raid fleet", &raidName, &object->raidFleet, editor.Universe().fleets))
-		SetDirty();
+	if(ImGui::TreeNode("raid fleets"))
+	{
+		auto toRemove = object->raidFleets.end();
+		const Fleet *toAdd = nullptr;
+		int index = 0;
+		for(auto it = object->raidFleets.begin(); it != object->raidFleets.end(); ++it)
+		{
+			ImGui::PushID(index++);
+			string fleetName = it->fleet ? it->fleet->Name() : "";
+			bool open = ImGui::TreeNode("fleet", "%s", fleetName.c_str());
+			if(ImGui::BeginPopupContextItem())
+			{
+				if(ImGui::Selectable("Remove"))
+				{
+					toRemove = it;
+					SetDirty();
+				}
+				ImGui::EndPopup();
+			}
+
+			if(open)
+			{
+				static Fleet *selected;
+				if(ImGui::InputCombo(" ", &fleetName, &selected, editor.Universe().fleets))
+				{
+					if(selected)
+						toAdd = selected;
+					toRemove = it;
+					SetDirty();
+				}
+
+				if(ImGui::InputDoubleEx("minimum attractiveness", &it->minAttraction))
+					SetDirty();
+				if(ImGui::InputDoubleEx("maximum attractiveness", &it->maxAttraction))
+					SetDirty();
+				ImGui::TreePop();
+			}
+			ImGui::PopID();
+		}
+		if(toRemove != object->raidFleets.end())
+		{
+			double minAttraction = toRemove->minAttraction;
+			double maxAttraction = toRemove->maxAttraction;
+			object->raidFleets.erase(toRemove);
+			if(toAdd)
+				object->raidFleets.emplace_back(toAdd, minAttraction, maxAttraction);
+		}
+
+		ImGui::Spacing();
+		static Fleet *selected;
+		string name;
+		if(ImGui::InputCombo("add raid fleet", &name, &selected, editor.Universe().fleets))
+			if(selected)
+			{
+				object->raidFleets.emplace_back(selected, 2., 0.);
+				SetDirty();
+			}
+		ImGui::TreePop();
+	}
 
 	static string enforcements;
 	if(ImGui::InputTextMultiline("enforces", &enforcements))
@@ -299,7 +355,7 @@ void GovernmentEditor::WriteToFile(DataWriter &writer, const Government *governm
 		if(government->swizzle || diff)
 			writer.Write("swizzle", government->swizzle);
 	if(!diff || government->color != diff->color)
-		writer.Write("color", government->color.Get()[0], government->color.Get()[1], government->color.Get()[2]);
+		writer.Write("color", government->color->Get()[0], government->color->Get()[1], government->color->Get()[2]);
 	if(!diff || government->initialPlayerReputation != diff->initialPlayerReputation)
 		if(government->initialPlayerReputation || diff)
 			writer.Write("player reputation", government->initialPlayerReputation);
@@ -394,9 +450,7 @@ void GovernmentEditor::WriteToFile(DataWriter &writer, const Government *governm
 	if(!diff || government->language != diff->language)
 		if(!government->language.empty() || diff)
 			writer.Write("language", government->language);
-	if(!diff || government->raidFleet != diff->raidFleet)
-		if(government->raidFleet || diff)
-			writer.Write("raid", government->raidFleet->Name());
+	WriteDiff(writer, "raid", government->raidFleets, diff ? &diff->raidFleets : nullptr);
 	if(!diff || government->enforcementZones != diff->enforcementZones)
 		if(!government->enforcementZones.empty() || diff)
 		{

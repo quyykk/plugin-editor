@@ -170,7 +170,7 @@ void PlanetEditor::RenderPlanet()
 			if(ImGui::InputText("##attribute", &str, ImGuiInputTextFlags_EnterReturnsTrue))
 			{
 				if(!str.empty())
-					toAdd.insert(move(str));
+					toAdd.insert(std::move(str));
 				toRemove.insert(attribute);
 			}
 			ImGui::PopID();

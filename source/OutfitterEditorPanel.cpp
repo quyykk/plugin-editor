@@ -370,9 +370,10 @@ void OutfitterEditorPanel::DrawMain()
 	const float endX = Screen::Right() - (SIDE_WIDTH + 1);
 	double nextY = begin.Y() + TILE_SIZE;
 	int scrollY = 0;
-	for(const string &category : categories)
+	for(const auto &cat : categories)
 	{
-		map<string, set<string>>::const_iterator it = catalog.find(category);
+		const auto &category = cat.Name();
+		auto it = catalog.find(category);
 		if(it == catalog.end())
 			continue;
 
@@ -492,7 +493,7 @@ int OutfitterEditorPanel::VisiblityCheckboxesSize() const
 
 int OutfitterEditorPanel::DrawPlayerShipInfo(const Point &point)
 {
-	shipInfo.Update(*ship, Depreciation(), 0);
+	shipInfo.Update(*ship, PlayerInfo(), 0);
 	shipInfo.DrawAttributes(point);
 
 	return shipInfo.AttributesHeight();
@@ -580,7 +581,7 @@ int OutfitterEditorPanel::DrawDetails(const Point &center)
 	if(selectedOutfit)
 	{
 		outfitInfo.Update(*selectedOutfit, PlayerInfo(), CanSell());
-		selectedItem = selectedOutfit->Name();
+		selectedItem = selectedOutfit->TrueName();
 
 		const Sprite *thumbnail = selectedOutfit->Thumbnail();
 		const Sprite *background = editor.Sprites().Get("ui/outfitter selected");
@@ -671,7 +672,7 @@ void OutfitterEditorPanel::Buy(bool alreadyOwned)
 			return;
 
 		// Special case: licenses.
-		if(IsLicense(selectedOutfit->Name()))
+		if(IsLicense(selectedOutfit->TrueName()))
 			return;
 
 		if(!CanBuy(alreadyOwned))
@@ -700,7 +701,7 @@ void OutfitterEditorPanel::FailBuy() const
 		return;
 	}
 
-	if(HasLicense(selectedOutfit->Name()))
+	if(HasLicense(selectedOutfit->TrueName()))
 	{
 		GetUI()->Push(new Dialog("You already have one of these licenses, "
 			"so there is no reason to buy another."));
@@ -829,7 +830,7 @@ void OutfitterEditorPanel::FailSell(bool toStorage) const
 		return;
 	else if(selectedOutfit->Get("map"))
 		GetUI()->Push(new Dialog("You cannot " + verb + " maps. Once you buy one, it is yours permanently."));
-	else if(HasLicense(selectedOutfit->Name()))
+	else if(HasLicense(selectedOutfit->TrueName()))
 		GetUI()->Push(new Dialog("You cannot " + verb + " licenses. Once you obtain one, it is yours permanently."));
 	else
 	{
@@ -847,7 +848,7 @@ void OutfitterEditorPanel::FailSell(bool toStorage) const
 								"because that would cause your ship's \"" + it.first +
 								"\" value to be reduced to less than zero. "
 								"To " + verb + " this outfit, you must " + verb + " the " +
-								sit.first->Name() + " outfit first."));
+								sit.first->TrueName() + " outfit first."));
 							return;
 						}
 					GetUI()->Push(new Dialog("You cannot " + verb + " this outfit, "
@@ -915,7 +916,7 @@ void OutfitterEditorPanel::DrawOutfit(const Outfit &outfit, const Point &center,
 	SpriteShader::Draw(thumbnail, center);
 
 	// Draw the outfit name.
-	const string &name = outfit.Name();
+	const string &name = outfit.TrueName();
 	const Font &font = FontSet::Get(14);
 	Point offset(-.5 * OUTFIT_SIZE, -.5 * OUTFIT_SIZE + 10.);
 	font.Draw({name, {OUTFIT_SIZE, Alignment::CENTER, Truncate::MIDDLE}},
@@ -1208,8 +1209,8 @@ bool OutfitterEditorPanel::Click(int x, int y, int /* clicks */)
 				if(toggleAll)
 				{
 					selectedOutfit = nullptr;
-					for(const string &category : categories)
-						collapsed.insert(category);
+					for(const auto &category : categories)
+						collapsed.insert(category.Name());
 				}
 				else
 				{

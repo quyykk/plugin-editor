@@ -5,6 +5,10 @@ target_sources(Editor PRIVATE
 	../endless-sky/source/AI.h
 	../endless-sky/source/Account.cpp
 	../endless-sky/source/Account.h
+	../endless-sky/source/AlertLabel.cpp
+	../endless-sky/source/AlertLabel.h
+	../endless-sky/source/AmmoDisplay.cpp
+	../endless-sky/source/AmmoDisplay.h
 	../endless-sky/source/Angle.cpp
 	../endless-sky/source/Angle.h
 	../endless-sky/source/Armament.cpp
@@ -29,6 +33,8 @@ target_sources(Editor PRIVATE
 	../endless-sky/source/CaptureOdds.h
 	../endless-sky/source/CargoHold.cpp
 	../endless-sky/source/CargoHold.h
+	../endless-sky/source/CategoryList.cpp
+	../endless-sky/source/CategoryList.h
 	../endless-sky/source/CategoryTypes.h
 	../endless-sky/source/ClickZone.h
 	../endless-sky/source/CollisionSet.cpp
@@ -64,8 +70,12 @@ target_sources(Editor PRIVATE
 	../endless-sky/source/Dialog.h
 	../endless-sky/source/Dictionary.cpp
 	../endless-sky/source/Dictionary.h
+	../endless-sky/source/DistanceCalculationSettings.h
+	../endless-sky/source/DistanceCalculationSettings.cpp
 	../endless-sky/source/DistanceMap.cpp
 	../endless-sky/source/DistanceMap.h
+	../endless-sky/source/Distribution.cpp
+	../endless-sky/source/Distribution.h
 	../endless-sky/source/DrawList.cpp
 	../endless-sky/source/DrawList.h
 	../endless-sky/source/Effect.cpp
@@ -87,10 +97,14 @@ target_sources(Editor PRIVATE
 	../endless-sky/source/FireCommand.h
 	../endless-sky/source/Fleet.cpp
 	../endless-sky/source/Fleet.h
+	../endless-sky/source/FleetCargo.cpp
+	../endless-sky/source/FleetCargo.h
 	../endless-sky/source/Flotsam.cpp
 	../endless-sky/source/Flotsam.h
 	../endless-sky/source/FogShader.cpp
 	../endless-sky/source/FogShader.h
+	../endless-sky/source/FormationPattern.cpp
+	../endless-sky/source/FormationPattern.h
 	../endless-sky/source/FrameTimer.cpp
 	../endless-sky/source/FrameTimer.h
 	../endless-sky/source/Galaxy.cpp
@@ -105,6 +119,8 @@ target_sources(Editor PRIVATE
 	../endless-sky/source/GameEvent.h
 	../endless-sky/source/GameLoadingPanel.cpp
 	../endless-sky/source/GameLoadingPanel.h
+	../endless-sky/source/Gamerules.cpp
+	../endless-sky/source/Gamerules.h
 	../endless-sky/source/GameWindow.cpp
 	../endless-sky/source/GameWindow.h
 	../endless-sky/source/Government.cpp
@@ -129,6 +145,7 @@ target_sources(Editor PRIVATE
 	../endless-sky/source/Interface.h
 	../endless-sky/source/ItemInfoDisplay.cpp
 	../endless-sky/source/ItemInfoDisplay.h
+	../endless-sky/source/JumpTypes.h
 	../endless-sky/source/Logger.cpp
 	../endless-sky/source/Logger.h
 	../endless-sky/source/LineShader.cpp
@@ -177,6 +194,8 @@ target_sources(Editor PRIVATE
 	../endless-sky/source/Music.h
 	../endless-sky/source/NPC.cpp
 	../endless-sky/source/NPC.h
+	../endless-sky/source/NPCAction.cpp
+	../endless-sky/source/NPCAction.h
 	../endless-sky/source/News.cpp
 	../endless-sky/source/News.h
 	../endless-sky/source/Outfit.cpp
@@ -205,6 +224,8 @@ target_sources(Editor PRIVATE
 	../endless-sky/source/PlayerInfo.h
 	../endless-sky/source/PlayerInfoPanel.cpp
 	../endless-sky/source/PlayerInfoPanel.h
+	../endless-sky/source/Plugins.cpp
+	../endless-sky/source/Plugins.h
 	../endless-sky/source/Point.cpp
 	../endless-sky/source/Point.h
 	../endless-sky/source/PointerShader.cpp
@@ -215,6 +236,8 @@ target_sources(Editor PRIVATE
 	../endless-sky/source/Preferences.h
 	../endless-sky/source/PreferencesPanel.cpp
 	../endless-sky/source/PreferencesPanel.h
+	../endless-sky/source/PrintData.cpp
+	../endless-sky/source/PrintData.h
 	../endless-sky/source/Projectile.cpp
 	../endless-sky/source/Projectile.h
 	../endless-sky/source/Radar.cpp
@@ -242,6 +265,8 @@ target_sources(Editor PRIVATE
 	../endless-sky/source/ShipInfoDisplay.h
 	../endless-sky/source/ShipInfoPanel.cpp
 	../endless-sky/source/ShipInfoPanel.h
+	../endless-sky/source/ShipJumpNavigation.cpp
+	../endless-sky/source/ShipJumpNavigation.h
 	../endless-sky/source/ShipyardPanel.cpp
 	../endless-sky/source/ShipyardPanel.h
 	../endless-sky/source/ShopPanel.cpp
@@ -268,6 +293,7 @@ target_sources(Editor PRIVATE
 	../endless-sky/source/StellarObject.h
 	../endless-sky/source/System.cpp
 	../endless-sky/source/System.h
+	../endless-sky/source/SystemEntry.h
 	../endless-sky/source/TaskQueue.cpp
 	../endless-sky/source/TaskQueue.h
 	../endless-sky/source/Test.cpp
@@ -295,10 +321,16 @@ target_sources(Editor PRIVATE
 	../endless-sky/source/Weather.cpp
 	../endless-sky/source/Weather.h
 	../endless-sky/source/WeightedList.h
-	../endless-sky/source/comparators/ByGivenOrder.h
-	../endless-sky/source/comparators/ByName.h
+	../endless-sky/source/Wormhole.cpp
+	../endless-sky/source/Wormhole.h
+	../endless-sky/source/WormholeStrategy.h
 	../endless-sky/source/pi.h
 	../endless-sky/source/shift.h
+	../endless-sky/source/comparators/ByGivenOrder.h
+	../endless-sky/source/comparators/ByName.h
+	../endless-sky/source/comparators/BySeriesAndIndex.h
+	../endless-sky/source/ship/ShipAICache.cpp
+	../endless-sky/source/ship/ShipAICache.h
 	../endless-sky/source/text/DisplayText.cpp
 	../endless-sky/source/text/DisplayText.h
 	../endless-sky/source/text/Font.cpp
@@ -347,8 +379,8 @@ target_sources(Editor PRIVATE
 	OutfitterEditorPanel.h
 	PlanetEditor.cpp
 	PlanetEditor.h
-	Plugin.cpp
-	Plugin.h
+	EditorPlugin.cpp
+	EditorPlugin.h
 	ShipEditor.cpp
 	ShipEditor.h
 	ShipyardEditor.cpp

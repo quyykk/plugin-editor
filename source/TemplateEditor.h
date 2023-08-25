@@ -8,6 +8,7 @@
 #include "Effect.h"
 #include "Fleet.h"
 #include "GameData.h"
+#include "Government.h"
 #include "Minable.h"
 #include "RandomEvent.h"
 #include "Sound.h"
@@ -76,6 +77,7 @@ protected:
 	bool RenderElement(Body *sprite, const std::string &name, const std::function<bool(const std::string &)> &spriteFilter = {});
 	void RenderSound(const std::string &name, std::map<const Sound *, int> &map);
 	void RenderEffect(const std::string &name, std::map<const Effect *, int> &map);
+	void RenderEffect(const std::string &name, std::map<const Effect *, float> &map);
 
 
 protected:
@@ -108,7 +110,9 @@ template <typename T>
 const std::string &NameFor(const T *obj) { return obj->Name(); }
 template <typename T, typename U>
 std::string NameFor(const std::pair<T, U> &obj) { return obj.first; }
-inline const std::string &NameFor(const System::Asteroid &obj) { return obj.Type() ? obj.Type()->Name() : obj.Name(); }
+inline const std::string &NameFor(const System::Asteroid &obj) { return obj.Type() ? obj.Type()->TrueName() : obj.Name(); }
+inline std::string NameFor(const Government::RaidFleet &obj) { return obj.GetFleet() ? obj.GetFleet()->Name() : ""; }
+inline std::string NameFor(const Government::RaidFleet *obj) { return obj->GetFleet() ? obj->GetFleet()->Name() : ""; }
 inline std::string NameFor(double d) {
 	std::ostringstream stream;
 	stream << std::fixed << std::setprecision(3) << d;

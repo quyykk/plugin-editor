@@ -51,6 +51,16 @@ namespace {
 	const int RECENTER_TIME = 20;
 	constexpr int MAX_ZOOM = 3;
 	constexpr int MIN_ZOOM = -3;
+
+	// Struct for storing the ends of wormhole links and their colors.
+	struct WormholeArrow {
+		WormholeArrow() = default;
+		WormholeArrow(const System *from, const System *to, const Color *color)
+		: from(from), to(to), color(color) {}
+		const System *from = nullptr;
+		const System *to = nullptr;
+		const Color *color = nullptr;
+	};
 }
 
 
@@ -569,7 +579,7 @@ void MapEditorPanel::UpdateCache()
 						renderLink.color = Color(220.f / 255.f, 20.f / 255.f, 60.f / 255.f, 0.5f);
 				}
 
-				links.emplace_back(move(renderLink));
+				links.emplace_back(std::move(renderLink));
 			}
 	}
 }
@@ -588,48 +598,50 @@ void MapEditorPanel::UpdateJumpDistance()
 void MapEditorPanel::DrawWormholes()
 {
 	// Keep track of what arrows and links need to be drawn.
-	set<pair<const System *, const System *>> arrowsToDraw;
+	vector<WormholeArrow> arrowsToDraw;
 
-	// Avoid iterating each StellarObject in every system by iterating over planets instead. A
-	// system can host more than one set of wormholes (e.g. Cardea), and some wormholes may even
-	// share a link vector. If a wormhole's planet has no description, no link will be drawn.
-	for(auto &&it : editor.Universe().planets)
+	// A system can host more than one set of wormholes (e.g. Cardea), and some wormholes may even
+	// share a link vector.
+	for(auto &&it : GameData::Wormholes())
 	{
-		const Planet &p = it.second;
-		if(!p.IsValid() || !p.IsWormhole() || p.Description().empty())
+		if(!it.second.IsValid())
 			continue;
 
-		const vector<const System *> &waypoints = p.WormholeSystems();
-		const System *from = waypoints.back();
-		for(const System *to : waypoints)
-		{
-			if(from->FindStellar(&p)->HasSprite())
-				arrowsToDraw.emplace(from, to);
-			from = to;
-		}
+		const Planet &p = *it.second.GetPlanet();
+		if(!p.IsValid() || !it.second.IsMappable())
+			continue;
+
+		for(auto &&link : it.second.Links())
+			if(!link.first->Inaccessible() && !link.second->Inaccessible() && p.IsInSystem(link.first))
+				arrowsToDraw.emplace_back(link.first, link.second, it.second.GetLinkColor());
+
 	}
 
-	const Color &wormholeDim = *editor.Universe().colors.Get("map unused wormhole");
-	const Color &arrowColor = *editor.Universe().colors.Get("map used wormhole");
 	static const double ARROW_LENGTH = 4.;
 	static const double ARROW_RATIO = .3;
 	static const Angle LEFT(30.);
 	static const Angle RIGHT(-30.);
 	const double zoom = Zoom();
 
-	for(const pair<const System *, const System *> &link : arrowsToDraw)
+	for(const WormholeArrow &link : arrowsToDraw)
 	{
+		// Get the wormhole link color.
+		const Color &arrowColor = *link.color;
+		const Color &wormholeDim = Color::Multiply(.33f, arrowColor);
+
 		// Compute the start and end positions of the wormhole link.
-		Point from = zoom * (link.first->Position() + center);
-		Point to = zoom * (link.second->Position() + center);
+		Point from = zoom * (link.from->Position() + center);
+		Point to = zoom * (link.to->Position() + center);
 		Point offset = (from - to).Unit() * MapPanel::LINK_OFFSET;
 		from -= offset;
 		to += offset;
 
 		// If an arrow is being drawn, the link will always be drawn too. Draw
 		// the link only for the first instance of it in this set.
-		if(link.first < link.second || !arrowsToDraw.count(make_pair(link.second, link.first)))
-			LineShader::Draw(from, to, MapPanel::LINK_WIDTH, wormholeDim);
+		if(link.from < link.to || !count_if(arrowsToDraw.begin(), arrowsToDraw.end(),
+			[&link](const WormholeArrow &cmp)
+			{ return cmp.from == link.to && cmp.to == link.from; }))
+				LineShader::Draw(from, to, MapPanel::LINK_WIDTH, wormholeDim);
 
 		// Compute the start and end positions of the arrow edges.
 		Point arrowStem = zoom * ARROW_LENGTH * offset;

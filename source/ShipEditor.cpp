@@ -249,11 +249,11 @@ void ShipEditor::RenderShip()
 		{
 			for(const auto &category : editor.Universe().categories[CategoryType::SHIP])
 			{
-				const bool selected = object->baseAttributes.Category() == category;
-				if(ImGui::Selectable(category.c_str(), selected))
+				const bool selected = object->baseAttributes.Category() == category.Name();
+				if(ImGui::Selectable(category.Name().c_str(), selected))
 				{
-					object->baseAttributes.category = category;
-					object->attributes.category = category;
+					object->baseAttributes.category = category.Name();
+					object->attributes.category = category.Name();
 					SetDirty();
 				}
 
@@ -366,7 +366,7 @@ void ShipEditor::RenderShip()
 			auto &outfit = *it;
 
 			int amount = outfit.second;
-			ImGui::InputInt(outfit.first->Name().c_str(), &amount);
+			ImGui::InputInt(outfit.first->TrueName().c_str(), &amount);
 			if(amount < 0)
 				amount = 0;
 			if(amount != outfit.second)
@@ -586,7 +586,7 @@ void ShipEditor::RenderShip()
 			ImGui::PushID(index++);
 			const char *type = (it->IsTurret() ? "turret" : "gun");
 			bool open = it->GetOutfit()
-				? ImGui::TreeNode("hardpoint", "%s: %g %g %s", type, 2. * it->GetPoint().X(), 2. * it->GetPoint().Y(), it->GetOutfit()->Name().c_str())
+				? ImGui::TreeNode("hardpoint", "%s: %g %g %s", type, 2. * it->GetPoint().X(), 2. * it->GetPoint().Y(), it->GetOutfit()->TrueName().c_str())
 				: ImGui::TreeNode("hardpoint", "%s: %g %g", type, 2. * it->GetPoint().X(), 2. * it->GetPoint().Y());
 			if(ImGui::BeginPopupContextItem())
 			{
@@ -612,7 +612,7 @@ void ShipEditor::RenderShip()
 					SetDirty();
 				}
 				static Outfit *outfit;
-				string outfitName = it->GetOutfit() ? it->GetOutfit()->Name() : "";
+				string outfitName = it->GetOutfit() ? it->GetOutfit()->TrueName() : "";
 				if(ImGui::InputCombo("outfit", &outfitName, &outfit, editor.Universe().outfits))
 				{
 					it->outfit = outfit;
@@ -641,7 +641,7 @@ void ShipEditor::RenderShip()
 	{
 		if(ImGui::Selectable("Add Bay"))
 		{
-			object->bays.emplace_back(0., 0., editor.Universe().categories[CategoryType::BAY][0]);
+			object->bays.emplace_back(0., 0., editor.Universe().categories[CategoryType::BAY].begin()->Name());
 			SetDirty();
 		}
 		ImGui::EndPopup();
@@ -668,10 +668,10 @@ void ShipEditor::RenderShip()
 				{
 					for(const auto &category : editor.Universe().categories[CategoryType::BAY])
 					{
-						const bool selected = it->category == category;
-						if(ImGui::Selectable(category.c_str(), selected))
+						const bool selected = it->category == category.Name();
+						if(ImGui::Selectable(category.Name().c_str(), selected))
 						{
-							it->category = category;
+							it->category = category.Name();
 							SetDirty();
 						}
 
@@ -1095,12 +1095,12 @@ void ShipEditor::WriteToFile(DataWriter &writer, const Ship *ship) const
 				using OutfitElement = pair<const Outfit *const, int>;
 				WriteSorted(ship->outfits,
 					[](const OutfitElement *lhs, const OutfitElement *rhs)
-						{ return lhs->first->Name() < rhs->first->Name(); },
+						{ return lhs->first->TrueName() < rhs->first->TrueName(); },
 					[&writer](const OutfitElement &it){
 						if(it.second == 1)
-							writer.Write(it.first->Name());
+							writer.Write(it.first->TrueName());
 						else
-							writer.Write(it.first->Name(), it.second);
+							writer.Write(it.first->TrueName(), it.second);
 					});
 			}
 			writer.EndChild();
@@ -1167,7 +1167,7 @@ void ShipEditor::WriteToFile(DataWriter &writer, const Ship *ship) const
 				const char *type = (hardpoint.IsTurret() ? "turret" : "gun");
 				if(hardpoint.GetOutfit())
 					writer.Write(type, 2. * hardpoint.GetPoint().X(), 2. * hardpoint.GetPoint().Y(),
-						hardpoint.GetOutfit()->Name());
+						hardpoint.GetOutfit()->TrueName());
 				else
 					writer.Write(type, 2. * hardpoint.GetPoint().X(), 2. * hardpoint.GetPoint().Y());
 				double hardpointAngle = hardpoint.GetBaseAngle().Degrees();

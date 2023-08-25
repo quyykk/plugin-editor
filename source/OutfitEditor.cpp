@@ -270,19 +270,19 @@ void OutfitEditor::Render()
 	{
 		if(ImGui::BeginMenu("Outfit"))
 		{
-			const bool alreadyDefined = object && !editor.BaseUniverse().outfits.Has(object->name);
+			const bool alreadyDefined = object && !editor.BaseUniverse().outfits.Has(object->trueName);
 			ImGui::MenuItem("New", nullptr, &showNewOutfit);
 			ImGui::MenuItem("Rename", nullptr, &showRenameOutfit, alreadyDefined);
 			ImGui::MenuItem("Clone", nullptr, &showCloneOutfit, object);
 			if(ImGui::MenuItem("Reset", nullptr, false, alreadyDefined && editor.GetPlugin().Has(object)))
 			{
 				editor.GetPlugin().Remove(object);
-				*object = *editor.BaseUniverse().outfits.Get(object->name);
+				*object = *editor.BaseUniverse().outfits.Get(object->trueName);
 			}
 			if(ImGui::MenuItem("Delete", nullptr, false, alreadyDefined))
 			{
 				editor.GetPlugin().Remove(object);
-				editor.Universe().outfits.Erase(object->name);
+				editor.Universe().outfits.Erase(object->trueName);
 				object = nullptr;
 			}
 			ImGui::EndMenu();
@@ -326,7 +326,7 @@ void OutfitEditor::Render()
 					return;
 
 				auto *newOutfit = editor.Universe().outfits.Get(name);
-				newOutfit->name = name;
+				newOutfit->trueName = name;
 				newOutfit->isDefined = true;
 				object = newOutfit;
 				editor.OutfitterPanel()->UpdateCache();
@@ -337,8 +337,8 @@ void OutfitEditor::Render()
 				if(editor.Universe().outfits.Find(name))
 					return;
 
-				editor.Universe().outfits.Rename(object->name, name);
-				object->name = name;
+				editor.Universe().outfits.Rename(object->trueName, name);
+				object->trueName = name;
 				editor.OutfitterPanel()->UpdateCache();
 				SetDirty();
 			});
@@ -351,7 +351,7 @@ void OutfitEditor::Render()
 				*clone = *object;
 				object = clone;
 
-				object->name = name;
+				object->trueName = name;
 				editor.OutfitterPanel()->UpdateCache();
 				SetDirty();
 			});
@@ -372,20 +372,18 @@ void OutfitEditor::Render()
 void OutfitEditor::RenderOutfit()
 {
 	static string str;
-	ImGui::Text("outfit: %s", object->Name().c_str());
+	ImGui::Text("outfit: %s", object->TrueName().c_str());
 	if(ImGui::BeginCombo("category", object->Category().c_str()))
 	{
-		int index = 0;
 		for(const auto &category : editor.Universe().categories[CategoryType::OUTFIT])
 		{
-			const bool selected = object->Category().c_str() == category;
-			if(ImGui::Selectable(category.c_str(), selected))
+			const bool selected = object->Category().c_str() == category.Name();
+			if(ImGui::Selectable(category.Name().c_str(), selected))
 			{
-				object->category = category;
+				object->category = category.Name();
 				editor.OutfitterPanel()->UpdateCache();
 				SetDirty();
 			}
-			++index;
 
 			if(selected)
 				ImGui::SetItemDefaultFocus();
@@ -444,7 +442,7 @@ void OutfitEditor::RenderOutfit()
 		static string addLicense;
 		if(ImGui::InputText("add license", &addLicense, ImGuiInputTextFlags_EnterReturnsTrue))
 		{
-			object->licenses.push_back(move(addLicense));
+			object->licenses.push_back(std::move(addLicense));
 			SetDirty();
 		}
 		ImGui::TreePop();
@@ -592,7 +590,7 @@ void OutfitEditor::RenderOutfit()
 				{
 					value.clear();
 					if(object->ammo.first)
-						value = object->ammo.first->Name();
+						value = object->ammo.first->TrueName();
 					if(ImGui::InputCombo("outfit##ammo", &value, &object->ammo.first, editor.Universe().outfits))
 					{
 						if(!value.empty())
@@ -640,7 +638,7 @@ void OutfitEditor::RenderOutfit()
 						static string outfitName;
 						outfitName.clear();
 						if(it->weapon)
-							outfitName = it->weapon->name;
+							outfitName = it->weapon->trueName;
 						bool open = ImGui::TreeNode("submunition", "submunition: %s %zu", outfitName.c_str(), it->count);
 						if(ImGui::BeginPopupContextItem())
 						{
@@ -1061,18 +1059,18 @@ void OutfitEditor::RenderOutfit()
 
 void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 {
-	const auto *diff = editor.BaseUniverse().outfits.Has(outfit->name)
-		? editor.BaseUniverse().outfits.Get(outfit->name)
+	const auto *diff = editor.BaseUniverse().outfits.Has(outfit->trueName)
+		? editor.BaseUniverse().outfits.Get(outfit->trueName)
 		: nullptr;
 
-	writer.Write("outfit", outfit->Name());
+	writer.Write("outfit", outfit->TrueName());
 	writer.BeginChild();
 
 	if(!diff || outfit->category != diff->category)
 		if(!outfit->category.empty() || diff)
 			writer.Write("category", outfit->Category().c_str());
 	if(!diff || outfit->pluralName != diff->category)
-		if(outfit->pluralName != outfit->name + "s" || diff)
+		if(outfit->pluralName != outfit->displayName + "s" || diff)
 			writer.Write("plural", outfit->pluralName);
 	if(!diff || outfit->licenses != diff->licenses) 
 		if(!outfit->licenses.empty())
@@ -1171,7 +1169,7 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 		if(outfit->ammo.first || diff)
 		{
 			writer.WriteToken("ammo");
-			writer.WriteToken(outfit->ammo.first->Name());
+			writer.WriteToken(outfit->ammo.first->TrueName());
 			writer.Write();
 		}
 
@@ -1278,7 +1276,7 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 			for(auto &&submunition : outfit->submunitions)
 			{
 				writer.WriteToken("submunition", true);
-				writer.WriteToken(submunition.weapon->Name());
+				writer.WriteToken(submunition.weapon->TrueName());
 				if(submunition.count > 1)
 					writer.WriteToken(submunition.count);
 				writer.Write();
@@ -1295,7 +1293,7 @@ void OutfitEditor::WriteToFile(DataWriter &writer, const Outfit *outfit) const
 		{
 			writeWeapon();
 			writer.WriteToken("ammo");
-			writer.WriteToken(outfit->ammo.first->Name());
+			writer.WriteToken(outfit->ammo.first->TrueName());
 			if(outfit->ammo.second != 1)
 				writer.WriteToken(outfit->ammo.second);
 			writer.Write();

@@ -198,6 +198,74 @@ void TemplateEditor<T>::RenderSound(const std::string &name, std::map<const Soun
 
 
 template <typename T>
+void TemplateEditor<T>::RenderEffect(const std::string &name, std::map<const Effect *, float> &map)
+{
+	static std::string effectName;
+	effectName.clear();
+
+	if(ImGui::TreeNode(name.c_str()))
+	{
+		Effect *toAdd = nullptr;
+		auto toRemove = map.end();
+		int index = 0;
+		for(auto it = map.begin(); it != map.end(); ++it)
+		{
+			ImGui::PushID(index++);
+
+			effectName = it->first->Name();
+			bool open = ImGui::TreeNode("effect", "%s", effectName.c_str());
+			if(ImGui::BeginPopupContextItem())
+			{
+				if(ImGui::Selectable("Remove"))
+				{
+					toRemove = it;
+					SetDirty();
+				}
+				ImGui::EndPopup();
+			}
+
+			if(open)
+			{
+				if(ImGui::InputCombo("effect", &effectName, &toAdd, GameData::Effects()))
+				{
+					toRemove = it;
+					SetDirty();
+				}
+				if(ImGui::InputFloat("count", &it->second, 1, 1, "%g", ImGuiInputTextFlags_EnterReturnsTrue))
+				{
+					if(!it->second)
+						toRemove = it;
+					SetDirty();
+				}
+				ImGui::TreePop();
+			}
+			ImGui::PopID();
+		}
+
+		static std::string newEffectName;
+		static const Effect *newEffect;
+		if(ImGui::InputCombo("new effect", &newEffectName, &newEffect, GameData::Effects()))
+			if(!newEffectName.empty())
+			{
+				++map[newEffect];
+				newEffectName.clear();
+				newEffect = nullptr;
+				SetDirty();
+			}
+		if(toAdd)
+		{
+			map[toAdd] += map[toRemove->first];
+			map.erase(toRemove);
+		}
+		else if(toRemove != map.end())
+			map.erase(toRemove);
+		ImGui::TreePop();
+	}
+}
+
+
+
+template <typename T>
 void TemplateEditor<T>::RenderEffect(const std::string &name, std::map<const Effect *, int> &map)
 {
 	static std::string effectName;

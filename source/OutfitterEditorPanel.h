@@ -5,6 +5,7 @@
 
 #include "Panel.h"
 
+#include "CategoryList.h"
 #include "ClickZone.h"
 #include "OutfitInfoDisplay.h"
 #include "ShipInfoDisplay.h"
@@ -138,7 +139,7 @@ private:
 	std::vector<ClickZone<std::string>> categoryZones;
 
 	std::map<std::string, std::set<std::string>> catalog;
-	const std::vector<std::string> &categories;
+	const CategoryList &categories;
 	static inline std::set<std::string> collapsed;
 
 	ShipInfoDisplay shipInfo;

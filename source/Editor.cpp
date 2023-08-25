@@ -199,7 +199,7 @@ const SpriteSet &Editor::Spriteset() const
 
 
 
-Plugin &Editor::GetPlugin()
+EditorPlugin &Editor::GetPlugin()
 {
 	return plugin;
 }

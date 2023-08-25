@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
-#ifndef PLUGIN_H_
-#define PLUGIN_H_
+#ifndef EDITOR_PLUGIN_H_
+#define EDITOR_PLUGIN_H_
 
 #include "Sale.h"
 
@@ -29,7 +29,7 @@ class System;
 
 
 // This class stores a list of objects that the plugin contains.
-class Plugin {
+class EditorPlugin {
 public:
 	using Node = std::variant<const Effect *, const Fleet *, const Galaxy *, const Hazard *,
 		  const Government *, const Outfit *, const Sale<Outfit> *, const Planet *, const Ship *,
@@ -91,7 +91,7 @@ private:
 
 
 template <typename T>
-std::map<T, std::string> &Plugin::GetMapForNodeElement()
+std::map<T, std::string> &EditorPlugin::GetMapForNodeElement()
 {
 	const auto &This = *this;
 	return const_cast<std::map<T, std::string> &>(This.GetMapForNodeElement<T>());
@@ -100,7 +100,7 @@ std::map<T, std::string> &Plugin::GetMapForNodeElement()
 
 
 template <typename T>
-const std::map<T, std::string> &Plugin::GetMapForNodeElement() const
+const std::map<T, std::string> &EditorPlugin::GetMapForNodeElement() const
 {
 	if constexpr(std::is_same_v<T, const Effect *>)
 		return effects;

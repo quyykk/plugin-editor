@@ -140,7 +140,7 @@ void OutfitterEditor::RenderOutfitter()
 	for(auto it = object->begin(); it != object->end(); ++it)
 	{
 		ImGui::PushID(index++);
-		string name = (*it)->Name();
+		string name = (*it)->TrueName();
 		Outfit *change = nullptr;
 		if(ImGui::InputCombo("##outfit", &name, &change, editor.Universe().outfits))
 		{
@@ -186,17 +186,17 @@ void OutfitterEditor::WriteToFile(DataWriter &writer, const Sale<Outfit> *outfit
 	writer.Write("outfitter", outfitter->name);
 	writer.BeginChild();
 	if(diff)
-		WriteSorted(diff->AsBase(), [](const Outfit *lhs, const Outfit *rhs) { return lhs->Name() < rhs->Name(); },
+		WriteSorted(diff->AsBase(), [](const Outfit *lhs, const Outfit *rhs) { return lhs->TrueName() < rhs->TrueName(); },
 				[&writer, &outfitter](const Outfit &outfit)
 				{
 					if(!outfitter->Has(&outfit))
-						writer.Write("remove", outfit.Name());
+						writer.Write("remove", outfit.TrueName());
 				});
-	WriteSorted(outfitter->AsBase(), [](const Outfit *lhs, const Outfit *rhs) { return lhs->Name() < rhs->Name(); },
+	WriteSorted(outfitter->AsBase(), [](const Outfit *lhs, const Outfit *rhs) { return lhs->TrueName() < rhs->TrueName(); },
 			[&writer, &diff](const Outfit &outfit)
 			{
 				if(!diff || !diff->Has(&outfit))
-					writer.Write(outfit.Name());
+					writer.Write(outfit.TrueName());
 			});
 	writer.EndChild();
 }
