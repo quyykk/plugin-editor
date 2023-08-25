@@ -127,7 +127,7 @@ IMGUI_API bool ImGui::InputCombo(const char *label, std::string *input, T **elem
 			const double scoreCutoff = .75;
 			for(const auto &it : elements)
 			{
-				if(!IsValid(it.second, 0) || (sort && !sort(it.first)))
+				if(!IsValid(it.second, 0) || (sort && !sort(it.first)) || *input == it.first)
 					continue;
 
 				const double score = scorer.similarity(it.first, scoreCutoff);
