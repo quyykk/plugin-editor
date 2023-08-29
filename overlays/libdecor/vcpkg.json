@@ -19,7 +19,7 @@
     "gtk": {
       "description": "Enables the use of the GTK backend",
       "dependencies": [
-        "gtk"
+        "gtk3"
       ]
     }
   }
