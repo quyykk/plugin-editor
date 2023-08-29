@@ -6,7 +6,7 @@ runs:
     - if: runner.os == 'Linux'
       run: |
         sudo apt update
-        sudo apt install -y --no-install-recommends libxmu-dev libxi-dev libxtst-dev libgl-dev libglu1-mesa-dev libgles2-mesa-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev ccache libdbus-1-dev
+        sudo apt install -y --no-install-recommends libx11-dev libxkbcommon-x11-dev libx11-xcb-dev libxmu-dev libxi-dev libxtst-dev libgl-dev libglu1-mesa-dev libgles2-mesa-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev ccache libdbus-1-dev
       shell: bash
 
     - if: runner.os == 'Windows'
