@@ -7,6 +7,7 @@ vcpkg_from_github(
     PATCHES
         deps.patch
         alsa-dep-fix.patch
+        8184.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" SDL_STATIC)
@@ -48,6 +49,7 @@ vcpkg_cmake_configure(
         -DSDL_INSTALL_CMAKEDIR="cmake"
         -DCMAKE_DISABLE_FIND_PACKAGE_Git=ON
         -DSDL_LIBSAMPLERATE_SHARED=OFF
+		-DSDL_WAYLAND_LIBDECOR_SHARED=OFF
     MAYBE_UNUSED_VARIABLES
         SDL_FORCE_STATIC_VCRT
 )
