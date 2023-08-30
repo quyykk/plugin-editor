@@ -44,8 +44,8 @@ jobs:
           configurePreset: 'linux-ci'
           buildPreset: 'linux-ci'
       - run: |
-          cat /home/runner/work/plugin-editor/plugin-editor/vcpkg/buildtrees/gtk3/config-x64-linux-dynamic-dbg-meson-log.txt.log
-          cat /home/runner/work/plugin-editor/plugin-editor/vcpkg/buildtrees/gtk3/config-x64-linux-dynamic-dbg-out.log
+          cat /home/runner/work/plugin-editor/plugin-editor/vcpkg/buildtrees/libdecor/config-x64-linux-dynamic-dbg-meson-log.txt.log
+          cat /home/runner/work/plugin-editor/plugin-editor/vcpkg/buildtrees/libdecor/config-x64-linux-dynamic-dbg-out.log
         if: always()
       - name: Package Application
         run: ./utils/build_appimage.sh build/ci
