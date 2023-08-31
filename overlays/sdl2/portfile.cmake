@@ -8,6 +8,7 @@ vcpkg_from_github(
         deps.patch
         alsa-dep-fix.patch
         8184.patch
+        a94d724f17d7236e9307a02ec946997aa192778e.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "static" SDL_STATIC)

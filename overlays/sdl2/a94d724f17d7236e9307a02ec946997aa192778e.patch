@@ -1,0 +1,24 @@
+From a94d724f17d7236e9307a02ec946997aa192778e Mon Sep 17 00:00:00 2001
+From: Anonymous Maarten <anonymous.maarten@gmail.com>
+Date: Wed, 30 Aug 2023 23:03:03 +0200
+Subject: [PATCH] wayland: add SDL_VIDEO_DRIVER_WAYLAND_DYNAMIC_EGL
+
+---
+ src/video/wayland/SDL_waylanddyn.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/src/video/wayland/SDL_waylanddyn.c b/src/video/wayland/SDL_waylanddyn.c
+index 4b41f3bf7b77..dde99bf4d3e0 100644
+--- a/src/video/wayland/SDL_waylanddyn.c
++++ b/src/video/wayland/SDL_waylanddyn.c
+@@ -35,8 +35,9 @@ typedef struct
+ } waylanddynlib;
+ 
+ static waylanddynlib waylandlibs[] = {
+-#ifdef SDL_VIDEO_DRIVER_WAYLAND_DYNAMIC_EGL
+     { NULL, SDL_VIDEO_DRIVER_WAYLAND_DYNAMIC },
++#ifdef SDL_VIDEO_DRIVER_WAYLAND_DYNAMIC_EGL
++    { NULL, SDL_VIDEO_DRIVER_WAYLAND_DYNAMIC_EGL },
+ #endif
+ #ifdef SDL_VIDEO_DRIVER_WAYLAND_DYNAMIC_CURSOR
+     { NULL, SDL_VIDEO_DRIVER_WAYLAND_DYNAMIC_CURSOR },
