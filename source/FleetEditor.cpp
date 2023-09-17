@@ -726,7 +726,7 @@ void FleetEditor::WriteToFile(DataWriter &writer, const Fleet *fleet) const
 
 			auto writeAll = [&writer](auto flags, const char *opt = nullptr)
 			{
-				for(auto i = 1ull; i <= (1ull << 34); i <<= 1)
+				for(auto i = 0ull; i < flags.size(); ++i)
 					if(auto personality = PersonalityToString[flags.test(i)])
 					{
 						if(opt)
