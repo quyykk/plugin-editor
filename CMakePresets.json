@@ -42,6 +42,7 @@
       "description": "Builds with the default host compiler on Linux",
       "inherits": "base",
       "cacheVariables": {
+        "VCPKG_HOST_TRIPLET": "x64-linux-dynamic",
         "VCPKG_TARGET_TRIPLET": "x64-linux-dynamic"
       },
       "condition": {
